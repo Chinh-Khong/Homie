@@ -91,14 +91,14 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 py-3 w-full">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-8">
         <div className="flex flex-col items-center w-full">
           {/* Top navigation bar */}
           <div className="flex items-center justify-between w-full mb-4">
             {/* Logo */}
             <Link href="/" className="flex items-center no-underline">
               <div className="text-rose-500 font-bold text-2xl flex items-center">
-                <span className="font-serif italic ml-4">Homie</span>
+                <span className="font-serif italic ml-8">Homie</span>
               </div>
             </Link>
 
