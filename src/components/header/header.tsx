@@ -36,7 +36,6 @@ const Header = () => {
     return `${selectedDates[0].format(format)} - ${selectedDates[1].format(format)}`;
   };
 
-  // Language dropdown items
   const languageItems: MenuProps = {
     items: [
       { key: '1', label: 'English' },
@@ -47,7 +46,6 @@ const Header = () => {
     ]
   };
 
-  // User dropdown items
   const userItems: MenuProps = {
     items: [
       { key: '1', label: 'Sign up' },
@@ -59,25 +57,22 @@ const Header = () => {
     ]
   };
 
-  // Logo 
-  const Logo = () => (
+  const _renderLogo = () => (
     <Link href="/" className="flex items-center no-underline">
       <div className="text-rose-500 font-bold text-2xl flex items-center">
-        <span className="font-serif italic ml-4">Homie.</span>
+        <span className="font-serif italic">Homie.</span>
       </div>
     </Link>
   );
 
-  // Navigation 
-  const Navigation = () => (
-    <div className="flex space-x-4">
+  const _renderNavigation = () => (
+    <div className="flex space-x-4 ">
       <Link href="#" className="font-semibold px-2">Home</Link>
       <Link href="#" className="font-semibold px-2">Experiences</Link>
     </div>
   );
 
-  // Language Dropdown 
-  const LanguageDropdown = () => (
+  const _renderLanguageDropdown = () => (
     <Dropdown menu={languageItems} placement="bottomRight">
       <button className="rounded-full p-2 cursor-pointer">
         <svg
@@ -98,8 +93,7 @@ const Header = () => {
     </Dropdown>
   );
 
-  // User Dropdown Component
-  const UserDropdown = () => (
+  const _renderUserDropdown = () => (
     <Dropdown menu={userItems} placement="bottomRight">
       <button className="rounded-full border border-gray-300 pl-3 pr-1 py-1 flex gap-2 items-center">
         <svg
@@ -135,16 +129,14 @@ const Header = () => {
     </Dropdown>
   );
 
-  // User Controls Component (combines language and user dropdowns)
-  const UserControls = () => (
+  const _renderUserControls = () => (
     <div className="flex items-center gap-4">
-      <LanguageDropdown />
-      <UserDropdown />
+      {_renderLanguageDropdown()}
+      {_renderUserDropdown()}
     </div>
   );
 
-  // Location Search Component
-  const LocationSearch = () => (
+  const _renderLocationSearch = () => (
     <div className="flex flex-col items-center justify-center p-1">
       <div className="font-medium text-base text-center w-full">Location</div>
       <input
@@ -154,8 +146,7 @@ const Header = () => {
     </div>
   );
 
-  // Date Picker Component
-  const DatePickerComponent = () => (
+  const _renderDatePickerComponent = () => (
     <div className="flex items-center justify-between border-l border-gray-300 pl-2 p-1">
       <div className="flex-1">
         <div className="font-medium text-base text-center w-full">Schedule</div>
@@ -166,15 +157,12 @@ const Header = () => {
           {formatSelectedDates()}
         </div>
       </div>
-
-      <SearchButton />
-
-      {showDatePicker && <DatePickerPopup />}
+      {_renderSearchButton()}
+      {showDatePicker && _renderDatePickerPopup()}
     </div>
   );
 
-  // Search Button Component
-  const SearchButton = () => (
+  const _renderSearchButton = () => (
     <div className="p-2 rounded-full bg-rose-500 text-white cursor-pointer flex items-center justify-center ml-auto">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -192,8 +180,7 @@ const Header = () => {
     </div>
   );
 
-  // Date Picker Popup Component
-  const DatePickerPopup = () => (
+  const _renderDatePickerPopup = () => (
     <div
       ref={datePickerRef}
       className="absolute top-[110%] left-1/3 right-0 mt-2 p-4 bg-white rounded-xl shadow-lg z-50"
@@ -221,29 +208,26 @@ const Header = () => {
     </div>
   );
 
-  // Search Bar Component (combines location search and date picker)
-  const SearchBar = () => (
+  const _renderSearchBar = () => (
     <div className="relative flex items-center border border-gray-200 rounded-full shadow-sm p-2 w-full max-w-xl mx-auto">
       <div className="grid grid-cols-2 w-full items-center">
-        <LocationSearch />
-        <DatePickerComponent />
+        {_renderLocationSearch()}
+        {_renderDatePickerComponent()}
       </div>
     </div>
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 py-3 w-full">
-      <div className="max-w-full mx-auto px-8">
-        <div className="flex flex-col items-center w-full">
-          <div className="flex items-center justify-between w-full mb-4">
-            <Logo />
-            <Navigation />
-            <UserControls />
-          </div>
-          <SearchBar />
+    <div className="max-w-full mx-auto px-10 b8 lg:px-28 py-4">
+      <div className="flex flex-col items-center w-full">
+        <div className="flex items-center justify-between w-full mb-4">
+          {_renderLogo()}
+          {_renderNavigation()}
+          {_renderUserControls()}
         </div>
+       {_renderSearchBar()}
       </div>
-    </header>
+    </div>
   );
 };
 
