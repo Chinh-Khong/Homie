@@ -59,7 +59,7 @@ const Header = () => {
     ]
   };
 
-  // Logo Component
+  // Logo 
   const Logo = () => (
     <Link href="/" className="flex items-center no-underline">
       <div className="text-rose-500 font-bold text-2xl flex items-center">
@@ -68,7 +68,7 @@ const Header = () => {
     </Link>
   );
 
-  // Navigation Component
+  // Navigation 
   const Navigation = () => (
     <div className="flex space-x-4">
       <Link href="#" className="font-semibold px-2">Home</Link>
@@ -76,7 +76,7 @@ const Header = () => {
     </div>
   );
 
-  // Language Dropdown Component
+  // Language Dropdown 
   const LanguageDropdown = () => (
     <Dropdown menu={languageItems} placement="bottomRight">
       <button className="rounded-full p-2 cursor-pointer">
