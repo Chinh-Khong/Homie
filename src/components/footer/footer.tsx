@@ -8,7 +8,7 @@ const Footer = () => {
       title: "Support",
       items: [
         "Help Center",
-        "AirCover",
+        "HomeCover",
         "Anti-discrimination",
         "Disability support",
         "Cancellation options",
@@ -18,25 +18,25 @@ const Footer = () => {
     {
       title: "Hosting",
       items: [
-        "Airbnb your home",
-        "AirCover for Hosts",
+        "Homie your home",
+        "HomeCover for Hosts",
         "Hosting resources",
         "Community forum",
         "Hosting responsibly",
-        "Airbnb-friendly apartments",
+        "Homie-friendly apartments",
         "Join a free Hosting class",
         "Find a co-host",
       ],
     },
     {
-      title: "Airbnb",
+      title: "Homie",
       items: [
         "Newsroom",
         "New features",
         "Careers",
         "Investors",
         "Gift cards",
-        "Airbnb.org emergency stays",
+        "Homie.org emergency stays",
       ],
     },
   ];
