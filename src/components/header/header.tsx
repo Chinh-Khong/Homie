@@ -11,6 +11,9 @@ import ModalLogin from "../modal-login/ModalLogin";
 import ModalRegister from "../modal-register/ModalRegister";
 import { useRouter } from "next/navigation";
 import { RouterUrl } from "@/src/constants/path";
+import ModalForgotPassword from "../modal-email-pw/ModalForgotPassword";
+import ModalVerifyCode from "../modal-verify-pw/ModalVerifyCode";
+import ModalSetPassword from "../modal-set-pw/ModalSetPassword";
 
 const { RangePicker } = DatePicker;
 
@@ -20,6 +23,9 @@ const Header = () => {
   const datePickerRef = useRef<HTMLDivElement>(null);
   const [isShowLogin, setIsShowLogin] = useState(false);
   const [isShowRegister, setIsShowRegister] = useState(false);
+  const [isShowForgotPassword, setIsShowForgotPassword] = useState(false);
+  const [isShowVerifyCode, setIsShowVerifyCode] = useState(false);
+  const [isShowSetPassword, setIsShowSetPassword] = useState(false);
   const router = useRouter();
 
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
@@ -65,7 +71,7 @@ const Header = () => {
       router.push(RouterUrl.PROFILE);
     }
   };
-  
+
   const userItems: MenuProps = {
     items: [
       {
@@ -79,13 +85,13 @@ const Header = () => {
       {
         key: '3',
         label: <span className="font-semibold w-full block">Profile</span>,
-      },    
+      },
       { key: '4', label: 'Host an experience' },
       { key: '5', label: 'Help' },
     ],
     onClick: handleMenuClick,
   };
-  
+
 
   const _renderLogo = () => (
     <Link href="/" className="flex items-center no-underline">
@@ -222,6 +228,7 @@ const Header = () => {
           isShowLogin={isShowLogin}
           setIsShowLogin={setIsShowLogin}
           setIsShowRegister={setIsShowRegister}
+          setIsShowForgotPassword={setIsShowForgotPassword}
         />
       )}
       {isShowRegister && (
@@ -231,8 +238,31 @@ const Header = () => {
           setIsShowLogin={setIsShowLogin}
         />
       )}
+      {isShowForgotPassword && (
+        <ModalForgotPassword
+          isShowForgotPassword={isShowForgotPassword}
+          setIsShowForgotPassword={setIsShowForgotPassword}
+          setIsShowLogin={setIsShowLogin}
+          setIsShowVerifyCode={setIsShowVerifyCode}
+        />
+      )}
+      {isShowVerifyCode && (
+        <ModalVerifyCode
+          isShowVerifyCode={isShowVerifyCode}
+          setIsShowVerifyCode={setIsShowVerifyCode}
+          setIsShowLogin={setIsShowLogin}
+          setIsShowSetPassword={setIsShowSetPassword}
+        />
+      )}
+      {isShowSetPassword && (
+        <ModalSetPassword
+          isShowSetPassword={isShowSetPassword}
+          setIsShowSetPassword={setIsShowSetPassword}
+          setIsShowLogin={setIsShowLogin}
+        />
+        )}
     </div>
   );
-}; //end 
+};
 
 export default Header;
