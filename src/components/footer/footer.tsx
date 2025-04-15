@@ -17,7 +17,7 @@ const Footer = () => {
           <ul className="flex flex-col gap-y-4">
             {[
               "Help Center",
-              "AirCover",
+              "HomeCover",
               "Anti-discrimination",
               "Disability support",
               "Cancellation options",
@@ -42,12 +42,12 @@ const Footer = () => {
           </h3>
           <ul className="flex flex-col gap-y-4">
             {[
-              "Airbnb your home",
-              "AirCover for Hosts",
+              "Homie your home",
+              "HomeCover for Hosts",
               "Hosting resources",
               "Community forum",
               "Hosting responsibly",
-              "Airbnb-friendly apartments",
+              "Homie-friendly apartments",
               "Join a free Hosting class",
               "Find a co-host",
             ].map((item) => (
@@ -63,10 +63,10 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Airbnb Column */}
+        {/* Homie Column */}
         <div>
           <h3 className="text-base font-semibold text-black-900 mb-4 pb-4">
-            Airbnb
+            Homie
           </h3>
           <ul className="flex flex-col gap-y-4">
             {[
@@ -75,7 +75,7 @@ const Footer = () => {
               "Careers",
               "Investors",
               "Gift cards",
-              "Airbnb.org emergency stays",
+              "Homie.org emergency stays",
             ].map((item) => (
               <li key={item}>
                 <a
@@ -98,7 +98,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4 md:mb-0">
             <span className="text-base text-black-600">
-              © 2025 Airbnb, Inc.
+              © 2025 Homie, Inc.
             </span>
             <span className="text-base text-black-600">·</span>
             {["Terms", "Sitemap", "Privacy", "Your Privacy Choices"].map(
