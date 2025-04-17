@@ -15,7 +15,6 @@ import { ToastContainer } from "react-toastify";
 import ModalForgotPassword from "../modal-email-pw/ModalForgotPassword";
 import ModalVerifyCode from "../modal-verify-pw/ModalVerifyCode";
 import ModalSetPassword from "../modal-set-pw/ModalSetPassword";
-import ModalVerify from "../modal-verify-otp/ModalVerify";
 
 const { RangePicker } = DatePicker;
 
@@ -28,9 +27,6 @@ const Header = () => {
   const [isShowForgotPassword, setIsShowForgotPassword] = useState(false);
   const [isShowVerifyCode, setIsShowVerifyCode] = useState(false);
   const [isShowSetPassword, setIsShowSetPassword] = useState(false);
-  const [isShowVerify, setIsShowVerify] = useState(false);
-  const [email, setEmail] = useState(""); // state để lưu email khi đăng ký thành công
-
   const router = useRouter();
 
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
@@ -241,10 +237,6 @@ const Header = () => {
           isShowRegister={isShowRegister}
           setIsShowRegister={setIsShowRegister}
           setIsShowLogin={setIsShowLogin}
-          setIsShowVerify={setIsShowVerify}
-          isShowVerify={isShowVerify}
-          email={email}
-          setEmail={setEmail} 
         />
       )}
       <ToastContainer />
@@ -270,14 +262,7 @@ const Header = () => {
           setIsShowSetPassword={setIsShowSetPassword}
           setIsShowLogin={setIsShowLogin}
         />
-      )}
-      {isShowVerify && (
-        <ModalVerify
-          isShowVerify={isShowVerify}
-          setIsShowVerify={setIsShowVerify}
-          email={email}
-        />
-      )}
+        )}
     </div>
   );
 };

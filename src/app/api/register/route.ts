@@ -1,81 +1,61 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import mongoose from 'mongoose';
-import User from '../../../models/User';
-import nodemailer from 'nodemailer';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
+import User from "../../../models/User";
 
 const connectMongo = async () => {
-  if (mongoose.connection.readyState) return;
-  const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("MONGODB_URI is not defined");
-  await mongoose.connect(uri);
-};
-
-const sendOtpEmail = async (email: string, otp: string) => {
-  console.log(email, 'chinh686868')
-  const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  const mailOptions = {
-    from: "HOMIE ĐÂY",
-    to: email, 
-    subject: 'Mã OTP xác thực tài khoản',
-    html: `
-      <p>Chào bạn,</p>
-      <p>Mã OTP của bạn là: <strong>${otp}</strong></p>
-      <p>Mã có hiệu lực trong 10 phút.</p>
-    `,
-  };
-
+  if (mongoose.connection.readyState) {
+    return; 
+  }
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`OTP sent to ${email}`);
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error("MONGODB_URI is not defined in environment variables");
+    }
+    await mongoose.connect(uri);
   } catch (error) {
-    console.error("Error sending OTP:", error);
+    throw new Error("Failed to connect to MongoDB");
   }
 };
-
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-
     if (!email || !password) {
-      return NextResponse.json({ message: "Email và mật khẩu là bắt buộc" }, { status: 400 });
+      return NextResponse.json({ message: "All fields are required!" }, { status: 400 });
     }
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ message: "Invalid email format!" }, { status: 400 });
+    }
+    if (password.length < 6) {
+      return NextResponse.json({ message: "Password must be at least 6 characters!" }, { status: 400 });
+    }
     await connectMongo();
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ message: "Email đã được đăng ký" }, { status: 409 });
+      return NextResponse.json({ message: "Email already registered!" }, { status: 409 });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); 
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); 
-
     const newUser = new User({
       email,
       password: hashedPassword,
-      otp,
-      otpExpiresAt,
-      isVerified: false,
+      createdAt: new Date(),
     });
     await newUser.save();
-    await sendOtpEmail(email, otp);
-
-    return NextResponse.json({ message: "Đăng ký thành công! Vui lòng kiểm tra email để nhận OTP." }, { status: 200 });
+    return NextResponse.json(
+      { message: "Registration successful!", user: { id: newUser._id, email: newUser.email } },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error("Register Error:", error);
-    return NextResponse.json({ message: "Lỗi máy chủ" }, { status: 500 });
+
+    if (error.message.includes("Failed to connect to MongoDB")) {
+      return NextResponse.json({ message: "Database connection error" }, { status: 500 });
+    }
+    if (error.name === "ValidationError") {
+      return NextResponse.json({ message: "Invalid user data" }, { status: 400 });
+    }
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
