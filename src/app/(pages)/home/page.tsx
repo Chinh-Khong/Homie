@@ -8,7 +8,12 @@ const Home = () => {
 
   const [users, setUsers] = useState([]);
   console.log(users, 'chinh13');
- // call api list room để lấy data ở đây nhé
+  useEffect(() => {
+    fetch('/api/hello')
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error('Lỗi khi lấy dữ liệu:', error));
+  }, []);
 
   const _renderItemRoom = () => {
     return (
