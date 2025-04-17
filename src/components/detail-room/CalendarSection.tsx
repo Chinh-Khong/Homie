@@ -1,8 +1,5 @@
-import { DateRange, Range, RangeKeyDict } from "react-date-range";
-import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
+import { DatePicker, ConfigProvider } from "antd";
+import dayjs from "dayjs";
 
 interface CalendarSectionProps {
   selectedDates: {
@@ -18,27 +15,19 @@ const CalendarSection = ({
   setSelectedDates,
   location,
 }: CalendarSectionProps) => {
-  const range: Range[] = [
-    {
-      startDate: selectedDates.startDate,
-      endDate: selectedDates.endDate,
-      key: "selection",
-    },
-  ];
+  const startDate = dayjs(selectedDates.startDate);
+  const endDate = dayjs(selectedDates.endDate);
 
   const getNights = () => {
-    const diffTime = Math.abs(
-      selectedDates.endDate.getTime() - selectedDates.startDate.getTime()
-    );
-    return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    const diffTime = endDate.diff(startDate, "day");
+    return Math.max(1, diffTime);
   };
 
-  const handleDateChange = (ranges: RangeKeyDict) => {
-    const { selection } = ranges;
-    if (selection.startDate && selection.endDate) {
+  const handleDateChange = (dates: any) => {
+    if (dates?.length === 2) {
       setSelectedDates({
-        startDate: selection.startDate,
-        endDate: selection.endDate,
+        startDate: dates[0].toDate(),
+        endDate: dates[1].toDate(),
       });
     }
   };
@@ -46,42 +35,77 @@ const CalendarSection = ({
   const resetDates = () => {
     setSelectedDates({
       startDate: new Date(),
-      endDate: new Date(Date.now() + 86400000), // +1 day
+      endDate: new Date(Date.now() + 86400000),
     });
   };
 
   return (
-    <div className="border border-gray-300 rounded-xl shadow-lg p-6 mb-8">
-      <h2 className="text-xl font-semibold mb-1">
-        {getNights()} night{getNights() > 1 ? "s" : ""} at {location}
-      </h2>
-      <p className=" mb-4 text-base">
-        {format(selectedDates.startDate, "dd MMM yyyy", { locale: enUS })} –{" "}
-        {format(selectedDates.endDate, "dd MMM yyyy", { locale: enUS })}
-      </p>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#ff66b2",
+        },
+        components: {
+          DatePicker: {
+            activeBorderColor: "#ff66b2",
+            hoverBorderColor: "#ff99cc",
+            cellActiveWithRangeBg: "#ffd6e7",
+            cellRangeBorderColor: "#ff66b2",
+            cellHoverBg: "#ffebf5",
+          },
+        },
+      }}
+    >
+      <div className="border border-gray-300 hover:black rounded-xl shadow-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-1">
+          {getNights()} night{getNights() > 1 ? "s" : ""} at {location}
+        </h2>
+        <p className="mb-4 text-base pt-3">
+          {startDate.format("DD MMM YYYY")} – {endDate.format("DD MMM YYYY")}
+        </p>
 
-      <div className="max-300">
-        <DateRange
-          ranges={range}
-          onChange={handleDateChange}
-          months={2}
-          direction="horizontal"
-          minDate={new Date()}
-          rangeColors={["#000"]}
-          showDateDisplay={false}
-          showMonthAndYearPickers={true}
-          locale={enUS}
-          editableDateInputs={true}
-        />
+        <div className="max-w-[300px] pt-2">
+          <DatePicker.RangePicker
+            value={[startDate, endDate]}
+            onChange={handleDateChange}
+            format="DD MMM YYYY"
+            disabledDate={(current) => current && current < dayjs()}
+            className="custom-range-picker"
+          />
+        </div>
+
+        <button
+          className="mt-3 text-sm underline text-gray-700 hover:text-black pt-6"
+          onClick={resetDates}
+        >
+          Clear dates
+        </button>
       </div>
-
-      <button
-        className="mt-3 text-sm underline text-gray-700 hover:text-black"
-        onClick={resetDates}
-      >
-        Clear dates
-      </button>
-    </div>
+      <style jsx>{`
+        :global(
+            .ant-picker-cell-in-view.ant-picker-cell-selected
+              .ant-picker-cell-inner
+          ) {
+          background: #e61e4d !important;
+        }
+        :global(
+            .ant-picker-cell-in-view.ant-picker-cell-range-start
+              .ant-picker-cell-inner
+          ),
+        :global(
+            .ant-picker-cell-in-view.ant-picker-cell-range-end
+              .ant-picker-cell-inner
+          ) {
+          background: #e61e4d !important;
+        }
+        :global(
+            .ant-picker-cell-in-view.ant-picker-cell-today
+              .ant-picker-cell-inner::before
+          ) {
+          border-color: #e61e4d !important;
+        }
+      `}</style>
+    </ConfigProvider>
   );
 };
 
