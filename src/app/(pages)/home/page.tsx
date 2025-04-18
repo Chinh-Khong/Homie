@@ -1,54 +1,82 @@
 "use client";
 
-import { IMAGE_URL } from "@/public";
 import { useEffect, useState } from "react";
-import { HeartOutlined, StarFilled, StarOutlined, StarTwoTone } from "@ant-design/icons";
+import { HeartFilled, StarFilled,} from "@ant-design/icons";
 
 const Home = () => {
+  const [rooms, setRooms] = useState([]);
+  useEffect(() => {
+    getListRooms();
+  }, []);
 
-  const [users, setUsers] = useState([]);
-  console.log(users, 'chinh13');
- // call api list room để lấy data ở đây nhé
+  const getListRooms = async () => {
+    try {
+      const response = await fetch("/api/get-list-rooms");
+      const data = await response.json();
+      setRooms(data.data);
+    } catch (error) {}
+  };
 
-  const _renderItemRoom = () => {
+  const _renderItemRoom = (room: any) => {
+    const truncateName = (name: string, wordLimit: number) => {
+      const words = name.split(" ");
+      if (words.length > wordLimit) {
+        return words.slice(0, wordLimit).join(" ") + " ...";
+      }
+      return name;
+    };
+
     return (
-      <div className="flex flex-col gap-1 md:w-[19vw] w-full">
+      <div key={room._id} className="flex flex-col gap-1 md:w-[19vw] w-full">
         <div className="relative w-full">
-          <img className="rounded-xl md:h-[18vw]" src={IMAGE_URL.ROOM1} alt="" />
-          <div className="absolute top-3 right-4 flex justify-center items-center cursor-pointer transition-transform duration-300 hover:scale-110">
-            <img width={35} src={IMAGE_URL.HEART} alt="" />
+          <img
+            className="rounded-xl md:h-[18vw] w-full object-cover"
+            src={room.image || "/default-room.jpg"}
+            alt={room.name}
+          />
+          <div className="absolute top-3 right-4 cursor-pointer">
+            <HeartFilled
+              style={{
+                color: "#e11d48",
+                fontSize: "23px",
+                stroke: "white",
+                strokeWidth: 45,
+              }}
+              className="hover:scale-110 transition-transform duration-500"
+            />
           </div>
         </div>
         <div className="flex flex-col">
           <p className="font-[500] text-md flex flex-row justify-between items-center">
-            <span>Tên phòng</span>
+            <span>{truncateName(room.name || "Tên phòng", 4)}</span> {/* Hiển thị tên phòng */}
             <span>
-              <StarFilled style={{ color: '#fadb14', marginRight: '2px' }} />4.9
+              <StarFilled style={{ color: "#fadb14", marginRight: "2px" }} />
+              {room.rating || "N/A"}
             </span>
           </p>
-          <p className="text-gray-500 text-sm">Cách 111km</p>
-          <p className="text-gray-500 text-sm">4-9 thg 5</p>
+          <p className="text-gray-500 text-sm">
+            {room.address || "Địa chỉ không xác định"}
+          </p>
+          <p className="text-gray-500 text-sm">
+            {room.rentalDate || "Không có ngày thuê"}
+          </p>
         </div>
-        <div className="text-md"><span className="font-[500]">đ999.999.999</span> / đêm</div>
+        <div className="text-md">
+          <span className="font-[500]">{room.price || "N/A"} đ</span> / đêm
+        </div>
       </div>
-    )
+    );
   };
 
   return (
     <div className="lg:px-38 px-4 w-full flex flex-col gap-8 justify-center items-center">
+      <h1 className="text-2xl font-bold">Danh sách phòng</h1>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-8">
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
-        {_renderItemRoom()}
+        {rooms.length > 0 ? (
+          rooms.map((room) => _renderItemRoom(room))
+        ) : (
+          <p>Loading room list ...</p>
+        )}
       </div>
     </div>
   );

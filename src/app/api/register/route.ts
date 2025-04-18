@@ -17,18 +17,18 @@ const sendOtpEmail = async (email: string, otp: string) => {
   });
 
   const mailOptions = {
-    from: '"HOMIE - Xác thực tài khoản',
+    from: '"HOMIE - Verify account',
     to: email,
-    subject: 'Mã OTP xác thực tài khoản của bạn',
+    subject: 'OTP code to verify your account',
     html: `
       <div style="font-family: Arial, sans-serif; color: #333;">
-        <h2>Chào bạn,</h2>
-        <p>Bạn vừa đăng ký tài khoản tại <strong>HOMIE</strong>.</p>
-        <p>Mã OTP của bạn là:</p>
+        <h2>Hi there,</h2>
+        <p>You have just registered an account at <strong>HOMIE</strong>.</p>
+        <p>Your OTP code is:</p>
         <h1 style="color: #007BFF">${otp}</h1>
-        <p>Mã có hiệu lực trong vòng <strong>10 phút</strong>.</p>
+        <p>The code is valid for <strong>10 minutes</strong>.</p>
         <br />
-        <p style="font-size: 12px; color: #777;">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+        <p style="font-size: 12px; color: #777;">If you do not fulfill this request, please ignore this email.</p>
         <p style="font-size: 12px; color: #777;">HOMIE Team</p>
       </div>
     `,
@@ -44,14 +44,14 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return NextResponse.json({ message: "Email và mật khẩu là bắt buộc" }, { status: 400 });
+      return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
     }
 
     await connectDB();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ message: "Email đã được đăng ký" }, { status: 409 });
+      return NextResponse.json({ message: "Email has been registered" }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -67,8 +67,8 @@ export async function POST(req: Request) {
     });
     await newUser.save();
     await sendOtpEmail(email, otp);
-    return NextResponse.json({ message: "Đăng ký thành công! Vui lòng kiểm tra email để nhận OTP." }, { status: 200 });
+    return NextResponse.json({ message: "Registration successful! Please check your email to receive OTP." }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ message: "Lỗi máy chủ" }, { status: 500 });
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
