@@ -1,42 +1,48 @@
-import NextAuth, { DefaultSession } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
+import {
+  NextAuthOptions,
+  DefaultSession,
+  User as NextAuthUser,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectDB } from "@/src/lib/mongoose";
 import User from "@/src/models/User";
+import { connectDB } from "./mongoose";
 import bcrypt from "bcryptjs";
-// Extend the default session type to include `id`
+
+interface CustomUser {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+
 declare module "next-auth" {
-  interface User {
-    phone: string;
-    address: string;
-  }
   interface Session {
     user: {
-      id: string; // Add `id` property
+      id: string;
       phone: string;
       address: string;
     } & DefaultSession["user"];
   }
 }
 
-export default NextAuth({
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    phone: string;
+    address: string;
+  }
+}
+
+export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID || "",
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET || "",
-    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<CustomUser | null> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Vui lòng nhập email và mật khẩu");
         }
@@ -62,35 +68,35 @@ export default NextAuth({
           id: user._id.toString(),
           email: user.email,
           name: user.name,
-          phone: user?.phone || "",
-          address: user?.address || "",
+          phone: user.phone || "",
+          address: user.address || "",
         };
       },
     }),
   ],
   pages: {
-    signIn: "/",
+    signIn: "/login",
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.phone = user?.phone;
-        token.address = user?.address;
+        token.phone = (user as CustomUser).phone;
+        token.address = (user as CustomUser).address;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log(session, token);
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.phone = token.phone as string;
-        session.user.address = token.address as string;
+        session.user.id = token.id;
+        session.user.phone = token.phone;
+        session.user.address = token.address;
       }
       return session;
     },
   },
-});
+};

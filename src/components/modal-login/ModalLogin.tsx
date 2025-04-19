@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import { Modal, Form, Input, Button } from "antd";
@@ -16,7 +16,7 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
   isShowLogin,
   setIsShowLogin,
   setIsShowRegister,
-  setIsShowForgotPassword
+  setIsShowForgotPassword,
 }) => {
   const [loading, setLoading] = React.useState(false);
 
@@ -27,23 +27,28 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
       });
 
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        toast.success(data.message || "Login successful!", { position: "top-right" });
+      if (result?.ok) {
+        toast.success("Đăng nhập thành công!", {
+          position: "top-right",
+        });
         setIsShowLogin(false);
+        window.location.reload();
       } else {
-        toast.error(data.message || "Login failed!", { position: "top-right" });
+        toast.error(result?.error || "Đăng nhập thất bại!", {
+          position: "top-right",
+        });
       }
     } catch (error) {
-      toast.error("An error occurred during the login process!", { position: "top-right" });
+      console.log(error);
+      toast.error("Có lỗi xảy ra trong quá trình đăng nhập!", {
+        position: "top-right",
+      });
     } finally {
       setLoading(false);
     }
@@ -83,7 +88,11 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         requiredMark="optional"
       >
         <Form.Item
-          label={<span className="font-bold text-lg">Email <span className="text-red-500">*</span></span>}
+          label={
+            <span className="font-bold text-lg">
+              Email <span className="text-red-500">*</span>
+            </span>
+          }
           name="email"
           rules={[
             { required: true, message: "Please enter your email!" },
@@ -94,14 +103,21 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         </Form.Item>
 
         <Form.Item
-          label={<span className="font-bold text-lg">Password <span className="text-red-500">*</span></span>}
+          label={
+            <span className="font-bold text-lg">
+              Password <span className="text-red-500">*</span>
+            </span>
+          }
           name="password"
           rules={[
             { required: true, message: "Please enter your password!" },
             { min: 8, message: "Password must be at least 8 characters!" },
           ]}
         >
-          <Input.Password placeholder="Enter your password" className="h-[50px] text-md" />
+          <Input.Password
+            placeholder="Enter your password"
+            className="h-[50px] text-md"
+          />
         </Form.Item>
 
         <div
@@ -112,16 +128,12 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         </div>
 
         <Form.Item>
-          <button
-            className="!text-white !h-[50px] !w-full !text-xl !font-medium bg-main hover:bg-main/90 rounded-xl"
-          >
+          <button className="!text-white !h-[50px] !w-full !text-xl !font-medium bg-main hover:bg-main/90 rounded-xl">
             Login
           </button>
         </Form.Item>
 
-        <div className="text-center text-[16px] mb-4">
-          Or login with:
-        </div>
+        <div className="text-center text-[16px] mb-4">Or login with:</div>
 
         {/* Social login buttons (uncomment if needed) */}
         {/* <div className="flex justify-center gap-4 pb-4">
@@ -141,7 +153,10 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
 
         <div className="text-center text-[16px]">
           Don't have an account?{" "}
-          <span className="font-semibold cursor-pointer text-blue-500 hover:underline" onClick={switchToRegister}>
+          <span
+            className="font-semibold cursor-pointer text-blue-500 hover:underline"
+            onClick={switchToRegister}
+          >
             Sign Up
           </span>
         </div>
