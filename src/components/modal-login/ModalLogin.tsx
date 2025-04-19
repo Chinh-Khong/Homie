@@ -34,19 +34,20 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
       });
 
       if (result?.ok) {
-        toast.success("Đăng nhập thành công!", {
+        toast.success("Login successful!", {
           position: "top-right",
         });
+
         setIsShowLogin(false);
         window.location.reload();
       } else {
-        toast.error(result?.error || "Đăng nhập thất bại!", {
+        toast.error(result?.error || "Login failed!", {
           position: "top-right",
         });
       }
     } catch (error) {
       console.log(error);
-      toast.error("Có lỗi xảy ra trong quá trình đăng nhập!", {
+      toast.error("An error occurred during the login process!", {
         position: "top-right",
       });
     } finally {

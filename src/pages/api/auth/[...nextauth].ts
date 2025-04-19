@@ -75,18 +75,26 @@ export default NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.phone = user?.phone;
-        token.address = user?.address;
+        token.phone = user.phone;
+        token.address = user.address;
       }
+
+      // Handle user update
+      if (trigger === "update" && session?.user) {
+        token.name = session.user.name;
+        token.phone = session.user.phone;
+        token.address = session.user.address;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      console.log(session, token);
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.name = token.name as string;
         session.user.phone = token.phone as string;
         session.user.address = token.address as string;
       }

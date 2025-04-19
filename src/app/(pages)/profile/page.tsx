@@ -9,17 +9,18 @@ interface UserInfoProps {
   name: keyof typeof emptyUser;
   value: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const emptyUser = {
-  name: "Anonymous",
+  name: "No name",
   email: "No email",
   phone: "No phone",
   address: "No address",
 };
 
 const Profile = () => {
-  const { data, status } = useSession();
+  const { data: session, status, update } = useSession();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(emptyUser);
@@ -43,24 +44,35 @@ const Profile = () => {
         throw new Error(error.message || "Failed to update profile");
       }
 
-      const updatedUser = await response.json();
-      setFormData(updatedUser);
+      const userResponse = await response.json();
+
+      // Update form data
+      setFormData(userResponse);
       setIsEditing(false);
+
+      // Update session
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          ...userResponse,
+        },
+      });
     } catch (error: any) {
       console.error("Save profile error:", error);
     }
   };
 
   const handleCancel = () => {
-    setFormData(data?.user as any);
+    setFormData(session?.user as any);
     setIsEditing(false);
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
-      setFormData(data?.user as any);
+    if (status === "authenticated" && session?.user) {
+      setFormData(session.user as any);
     }
-  }, [status, data]);
+  }, [status, session]);
 
   const _renderAvatar = () => {
     return (
@@ -85,7 +97,8 @@ const Profile = () => {
     type,
     name,
     value,
-    placeholder = "Chưa cung cấp",
+    placeholder,
+    disabled = false,
   }: UserInfoProps) => {
     return (
       <div className="p-4 border border-gray-300 rounded-lg hover:border-main transition-colors">
@@ -93,6 +106,7 @@ const Profile = () => {
           <h4 className="font-bold text-lg mb-2">{label}</h4>
           {isEditing ? (
             <input
+              disabled={disabled}
               id={name}
               type={type}
               name={name}
@@ -117,7 +131,7 @@ const Profile = () => {
             className="px-6 font-semibold py-2 bg-main text-white rounded-lg cursor-pointer"
             onClick={() => setIsEditing(true)}
           >
-            Chỉnh sửa hồ sơ
+            Edit profile
           </button>
         ) : (
           <div className="flex gap-4">
@@ -125,13 +139,13 @@ const Profile = () => {
               className="px-6 font-semibold py-2 bg-main text-white rounded-lg cursor-pointer"
               onClick={handleSave}
             >
-              Lưu
+              Save
             </button>
             <button
               className="px-6 font-semibold py-2 border border-black text-black rounded-lg cursor-pointer"
               onClick={handleCancel}
             >
-              Hủy
+              Cancel
             </button>
           </div>
         )}
@@ -143,7 +157,7 @@ const Profile = () => {
     <div className="lg:px-38 px-4 py-8 flex flex-col gap-10">
       {_renderAvatar()}
       <div className="w-full flex flex-col justify-center items-center gap-6">
-        <h3 className="text-xl font-bold mb-4">Chi tiết hồ sơ</h3>
+        <h3 className="text-xl font-bold mb-4">User Information</h3>
         <div className="grid md:grid-cols-2 gap-6 min-w-[750px]">
           {_renderUserInfo({
             label: "Họ tên",
@@ -156,6 +170,7 @@ const Profile = () => {
             type: "email",
             name: "email",
             value: formData.email,
+            disabled: true,
           })}
           {_renderUserInfo({
             label: "Phone",
@@ -171,9 +186,9 @@ const Profile = () => {
           })}
         </div>
       </div>
-      {data?.user && _renderEditButton()}
+      {session?.user && _renderEditButton()}
     </div>
   );
-}
+};
 
 export default Profile;
