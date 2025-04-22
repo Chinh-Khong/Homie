@@ -1,82 +1,105 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { HeartFilled, StarFilled,} from "@ant-design/icons";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { HeartFilled, StarFilled } from '@ant-design/icons';
 
-const Home = () => {
-  const [rooms, setRooms] = useState([]); 
+interface Room {
+  _id: string;
+  name: string;
+  image: string;
+  address: string;
+  rentalDate: string;
+  price: string;
+  rating: string;
+}
+
+export default function Home() {
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const router = useRouter();
+
   useEffect(() => {
-    getListRooms();
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch('/api/get-list-rooms');
+        if (!res.ok) {
+          throw new Error('Failed to fetch rooms');
+        }
+        const data = await res.json();
+        setRooms(data.data || []);
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+      }
+    };
+
+    fetchRooms();
   }, []);
 
-  const getListRooms = async () => {
-    try {
-      const response = await fetch("/api/get-list-rooms"); 
-      const data = await response.json();
-        setRooms(data.data); 
-      
-    } catch (error) {}
+  const goToDetail = (id: string) => {
+    if (!id) {
+      console.error('Invalid room ID');
+      return;
+    }
+    router.push(`/detail-room/${id}`);
   };
 
-  const _renderItemRoom = (room: any) => {
-    const truncateName = (name: string, wordLimit: number) => {
-      const words = name.split(" ");
-      if (words.length > wordLimit) {
-        return words.slice(0, wordLimit).join(" ") + " ...";
-      }
-      return name;
-    };
-    return (
-      <div key={room._id} className="flex flex-col gap-1 md:w-[19vw] w-full">
-
-        <div className="relative w-full">
-          <img
-            className="rounded-xl md:h-[18vw] w-full object-cover"
-            src={room.image}
-            alt={room.name}
-          />
-          <div className="absolute top-3 right-4 cursor-pointer">
-            <HeartFilled
-              style={{
-                color: "#e11d48",
-                fontSize: "23px",
-                stroke: "white",
-                strokeWidth: 45,
-              }}
-              className="hover:scale-110 transition-transform duration-500"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col ">
-          <div className="font-[500] text-md flex flex-row justify-between items-center">
-            <span>{truncateName(room.name || "Tên phòng", 4)}</span> 
-            <div className="flex items-center">
-              <StarFilled style={{ color: "#fadb14", marginRight: "2px" }} />
-              {room.rating || "N/A"}
-            </div>
-          </div>
-          <p className="text-gray-500 text-sm">{room.address || "Địa chỉ không xác định"}</p>
-          <p className="text-gray-500 text-sm">{room.rentalDate || "Không có ngày thuê"}</p>
-        </div>
-        <div className="text-md font-medium text-black-600">
-        <span className="font-[500]">{room.price || "N/A"} đ</span> / đêm
-        </div>
-      </div>
-    );
+  const truncateName = (name: string, wordLimit: number) => {
+    if (!name) return 'Tên không xác định';
+    const words = name.split(' ');
+    return words.length > wordLimit
+      ? words.slice(0, wordLimit).join(' ') + ' ...'
+      : name;
   };
 
   return (
     <div className="lg:px-38 px-4 w-full flex flex-col gap-8 justify-center items-center">
       <h1 className="text-2xl font-bold">Danh sách phòng</h1>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-8">
-        {rooms.length > 0 ? (
-          rooms.map((room) => _renderItemRoom(room)) 
+        {rooms.length ? (
+          rooms.map((room) => (
+            <div
+              key={room._id}
+              className="flex flex-col gap-1 cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            >
+              <div
+                className="relative w-full"
+                onClick={() => goToDetail(room._id)}
+              >
+                <img
+                  className="rounded-xl md:h-[18vw] w-full object-cover"
+                  src={room.image || '/placeholder.jpg'}
+                  alt={room.name || 'Room Image'}
+                />
+                <div className="absolute top-3 right-4">
+                  <HeartFilled
+                    style={{ color: '#e11d48', fontSize: 23 }}
+                    className="hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+              <div
+                className="font-[500] text-md flex justify-between items-center"
+                onClick={() => goToDetail(room._id)}
+              >
+                <span>{truncateName(room.name, 4)}</span>
+                <div className="flex items-center">
+                  <StarFilled style={{ color: '#fadb14', marginRight: 2 }} />
+                  {room.rating || 'N/A'}
+                </div>
+              </div>
+              <p className="text-gray-500 text-sm">{room.address}</p>
+              <p className="text-gray-500 text-sm">{room.rentalDate}</p>
+              <div className="text-md font-medium">
+                <span className="font-[500]">{room.price} đ</span> / đêm
+              </div>
+            </div>
+          ))
         ) : (
-          <p>Đang tải danh sách phòng...</p> 
+          <div className="flex justify-center items-center h-48">
+            <p className="text-gray-500">Đang tải danh sách phòng...</p>
+          </div>
         )}
       </div>
     </div>
   );
-};
-
-export default Home;
+}
