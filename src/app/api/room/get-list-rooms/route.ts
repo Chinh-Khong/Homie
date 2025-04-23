@@ -8,20 +8,29 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const keyword = searchParams.get('search_room') || '';
+    const searchAddress = searchParams.get('search_address') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '8');
     const skip = (page - 1) * limit;
 
-    const filter = keyword
-      ? {
-          $or: [
-            { name: { $regex: keyword, $options: 'i' } },
-            { address: { $regex: keyword, $options: 'i' } },
-            { type_room: { $regex: keyword, $options: 'i' } },
-          ],
-        }
-      : {};
+    // Tạo bộ lọc tìm kiếm
+    const filter: any = {};
 
+    // Tìm kiếm theo keyword (name, address, type_room)
+    if (keyword) {
+      filter.$or = [
+        { name: { $regex: keyword, $options: 'i' } },
+        { address: { $regex: keyword, $options: 'i' } },
+        { type_room: { $regex: keyword, $options: 'i' } },
+      ];
+    }
+
+    // Tìm kiếm theo địa chỉ cụ thể
+    if (searchAddress) {
+      filter.address = { $regex: searchAddress, $options: 'i' };
+    }
+
+    // Truy vấn danh sách phòng và tổng số phòng
     const [rooms, total] = await Promise.all([
       Room.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
       Room.countDocuments(filter),
@@ -35,6 +44,7 @@ export async function GET(req: Request) {
       totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
+    console.error('Error fetching rooms:', error);
     return NextResponse.json(
       { success: false, message: 'Failed to fetch rooms' },
       { status: 500 }

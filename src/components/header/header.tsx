@@ -17,6 +17,8 @@ import ModalVerifyOTP from "../ModalComponent/ModalVerifyOTP/ModalVerify";
 import { ToastContainer } from "react-toastify";
 import { signOut } from "next-auth/react";
 import ModalRegister from "../ModalComponent/ModalRegister/ModalRegister";
+import { SearchOutlined } from '@ant-design/icons';
+
 
 const { RangePicker } = DatePicker;
 
@@ -35,6 +37,7 @@ const Header = () => {
   const router = useRouter();
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [isToken, setIsToken] = useState(false);
+  const [searchAddress, setSearchAddress] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -178,6 +181,8 @@ const Header = () => {
       <input
         className="text-sm text-gray-600 outline-none text-center w-full"
         placeholder="Search destinations"
+        value={searchAddress}
+        onChange={(e) => setSearchAddress(e.target.value)}
       />
     </div>
   );
@@ -193,13 +198,14 @@ const Header = () => {
           {formatSelectedDates()}
         </div>
       </div>
-      <Image
-        src={IMAGE_URL.SEARCH}
-        alt="Search"
-        width={45}
-        height={45}
-        className="cursor-pointer"
-      />
+      <button
+      type="button"
+      onClick={handleSearchAddress} 
+      className="w-[45px] h-[45px] rounded-full bg-[#ff2e63] flex items-center justify-center shadow-md hover:opacity-80 transition cursor-pointer"
+      >
+      <SearchOutlined style={{ color: 'white', fontSize: '20px' }} />
+      </button>
+
       {showDatePicker && _renderDatePickerPopup()}
     </div>
   );
@@ -240,6 +246,12 @@ const Header = () => {
       </div>
     </div>
   );
+
+  const handleSearchAddress = async () => {
+    if (!searchAddress.trim()) return;
+  
+    router.push(`/home?search_address=${searchAddress}`);
+  };
 
   return (
     <div className="flex flex-col gap-4 items-center w-full lg:px-38 py-6 px-4">
