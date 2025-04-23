@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { HeartFilled, StarFilled } from '@ant-design/icons';
 
 interface Room {
-  _id: string;
+  room_id: string;
   name: string;
   image: string;
   address: string;
@@ -58,12 +58,12 @@ export default function Home() {
         {rooms.length ? (
           rooms.map((room) => (
             <div
-              key={room._id}
+              key={room.room_id}
               className="flex flex-col gap-1 cursor-pointer hover:shadow-lg transition-shadow duration-300"
             >
               <div
                 className="relative w-full"
-                onClick={() => goToDetail(room._id)}
+                onClick={() => goToDetail(room.room_id)}
               >
                 <img
                   className="rounded-xl md:h-[18vw] w-full object-cover"
@@ -79,7 +79,7 @@ export default function Home() {
               </div>
               <div
                 className="font-[500] text-md flex justify-between items-center"
-                onClick={() => goToDetail(room._id)}
+                onClick={() => goToDetail(room.room_id)}
               >
                 <span>{truncateName(room.name, 4)}</span>
                 <div className="flex items-center">

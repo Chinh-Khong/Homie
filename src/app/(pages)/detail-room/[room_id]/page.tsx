@@ -1,9 +1,6 @@
-
 'use client';
-
-import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import CalendarSection from '@/src/components/CalendarSection/CalendarSection';
 import {
   ShareAltOutlined,
@@ -21,80 +18,34 @@ import {
   CoffeeOutlined,
   WarningOutlined,
   StopOutlined,
-  DownOutlined,
 } from '@ant-design/icons';
-import { IMAGE_URL } from '@/public';
+import { useEffect, useState } from 'react';
 
-interface RoomDetail {
-  _id: string;
-  name: string;
-  images: string[]; // Thay image thành images
-  address: string;
-  rentalDate: string;
-  price: string;
-  rating: string;
-  description_room: string;
-  check_in: string;
-  check_out: string;
-  bed_rooms: string;
-  bath_room: string;
-  occupancy_limit: string;
-}
-
-export default function DetailRoom() {
-  const params = useParams();
-  const id = params?.id as string;
-
-  const [room, setRoom] = useState<RoomDetail | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const RoomDetail = () => {
+  const [room, setRoom] = useState<any>(null);
   const [selectedDates, setSelectedDates] = useState({
     startDate: new Date(2025, 4, 4),
     endDate: new Date(2025, 4, 9),
   });
+  const router = useRouter();
+  const params = useParams();
+  const room_id = params?.room_id;
 
   useEffect(() => {
-    const fetchRoom = async () => {
+    const fetchRoomDetail = async () => {
       try {
-        console.log("Fetching room with ID:", id); // Log ID để kiểm tra
-        const res = await fetch(`/api/get-room/${id}`);
-        if (!res.ok) {
-          setError('Room not found');
-          return;
-        }
-        const data = await res.json();
-        if (!data.success) {
-          setError(data.message || 'Room not found');
-          return;
-        }
-        console.log("Room data:", data.data); // Log dữ liệu trả về
+        const response = await fetch(`/api/get-room-detail?room_id=${room_id}`);
+        const data = await response.json();
         setRoom(data.data);
-      } catch (err) {
-        console.error("Error fetching room:", err);
-        setError('Failed to load room details');
+      } catch (error) {
+        console.error(error);
       }
     };
-  
-    if (id) fetchRoom();
-  }, [id]);
 
-  if (error) {
-    return (
-      <div className="text-center py-20 text-xl font-medium text-red-500">
-        {error}
-        <a href="/" className="block mt-4 text-blue-500 underline">
-          Quay lại trang chủ
-        </a>
-      </div>
-    );
-  }
-
-  if (!room) {
-    return (
-      <div className="text-center py-20 text-xl font-medium">
-        Đang tải thông tin phòng...
-      </div>
-    );
-  }
+    if (room_id) {
+      fetchRoomDetail();
+    }
+  }, [room_id]);
 
   const _renderTitle = () => {
     const actions: [React.ReactNode, string][] = [
@@ -110,9 +61,8 @@ export default function DetailRoom() {
             <button
               key={i}
               className={`flex items-center text-gray-600 hover:text-gray-900 ${i !== 0 ? 'ml-4' : ''} gap-2`}
-              aria-label={typeof text === 'string' ? text : 'Action button'}
             >
-              {icon || <span>Icon missing</span>}
+              {icon}
               <span className="text-sm md:text-base">{text}</span>
             </button>
           ))}
@@ -121,24 +71,6 @@ export default function DetailRoom() {
     );
   };
 
-  const _renderPhotoGallery = () => {
-    const cornerClasses = ['rounded-tr-lg', '', 'rounded-bl-lg', 'rounded-br-lg'];
-
-    // Tạo mảng images từ room.images
-    const images = room.images.map((url, index) => ({
-      url,
-      alt: index === 0 ? `Main image of ${room.name}` : `Additional room image ${index}`,
-    }));
-
-    // Đảm bảo có ít nhất 5 hình ảnh, nếu không thì lặp lại hình ảnh đầu tiên
-    while (images.length < 5) {
-      images.push({
-        url: room.images[0],
-        alt: `Placeholder image ${images.length}`,
-      });
-    }
-    
-  
   const _renderAboutThisPlace = () => (
     <div className="pt-6 pb-6">
       <p className="pt-4 text-base pb-6">
@@ -205,27 +137,16 @@ export default function DetailRoom() {
         ].map(([icon, text], i) => (
           <div className="flex items-center gap-4" key={i}>
             <span className="text-xl text-gray-800">{icon}</span>
-            <p
-              className={
-                typeof text === 'string' ? '' : 'line-through text-neutral-500'
-              }
-            >
-              {text}
-            </p>
+            <p className={typeof text === 'string' ? '' : 'line-through text-neutral-500'}>{text}</p>
           </div>
         ))}
       </div>
     </div>
   );
 
-  const _renderPriceBox = ({
-    selectedDates,
-  }: {
-    selectedDates: { startDate: Date; endDate: Date };
-  }) => {
+  const _renderPriceBox = () => {
     const pricePerNight = parseInt(room.price) || 17;
     const serviceFee = 17;
-
     const nights = Math.max(
       1,
       Math.ceil(
@@ -233,31 +154,22 @@ export default function DetailRoom() {
           (1000 * 60 * 60 * 24)
       )
     );
-
     const total = pricePerNight * nights + serviceFee;
 
     return (
-      <div className="sticky top-24 self-start pt-6">
+      <div className="sticky top-24 self-start pt-6 bg-red-500">
         <div className="border border-neutral-300 rounded-2xl shadow-lg p-6 space-y-6">
           <h3 className="text-2xl font-semibold pb-5">
             <span className="mr-1">€{pricePerNight}</span>
             <span className="text-base font-normal text-neutral-700">night</span>
           </h3>
-          <CalendarSection
-            selectedDates={selectedDates}
-            setSelectedDates={setSelectedDates}
-            location={room.address}
-          />
+          <CalendarSection selectedDates={selectedDates} setSelectedDates={setSelectedDates} location={room.address} />
           <div className="pt-5">
-            <button
-              className="w-full text-white py-3 rounded-xl font-medium hover:brightness-110 transition bg-gradient-to-r from-[#ff385c] via-[#e61e4d] to-[#d70466]"
-            >
+            <button className="w-full text-white py-3 rounded-xl font-medium hover:brightness-110 transition bg-gradient-to-r from-[#ff385c] via-[#e61e4d] to-[#d70466]">
               Reserve
             </button>
           </div>
-          <p className="text-center text-sm text-neutral-700">
-            You won't be charged yet
-          </p>
+          <p className="text-center text-sm text-neutral-700">You won't be charged yet</p>
           <div className="pt-4 text-lg font-base space-y-5">
             <div className="flex justify-between">
               <p className="underline">
@@ -266,7 +178,7 @@ export default function DetailRoom() {
               <p>€{pricePerNight * nights}</p>
             </div>
             <div className="flex justify-between pb-6">
-              <p className="underline">Homie service fee</p>
+              <p className="underline">Service fee</p>
               <p>€{serviceFee}</p>
             </div>
             <hr className="border-t border-neutral-300 pt-6" />
@@ -280,53 +192,31 @@ export default function DetailRoom() {
     );
   };
 
+  if (!room) return <div className="text-center py-20">Loading room details...</div>;
+
   return (
     <div className="lg:px-32 py-8">
       {_renderTitle()}
-      {_renderPhotoGallery()}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start md:items-center pb-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start pb-6 mb-6">
         <div>
-          <div className="border-b border-gray-200 pb-6 mb-6 pt-6">
-            <h2 className="text-2xl font-semibold">{room.address}</h2>
-            <p className="text-gray-700 mt-1">
-              {room.bed_rooms} bedrooms · {room.bath_room} bathrooms
-            </p>
-            <div className="flex items-center text-base text-gray-800 mt-1">
-              <span className="font-semibold">★ {room.rating || '4.67'}</span>
-              <span className="mx-1 text-gray-400">·</span>
-              <span className="underline cursor-pointer font-semibold pl-3">
-                6 reviews
-              </span>
-            </div>
+          <img className="rounded-xl w-full object-cover mb-4" src={room.image} alt={room.name} />
+          <h2 className="text-2xl font-semibold">{room.address}</h2>
+          <p className="text-gray-700 mt-1">
+            {room.bed_rooms} bedrooms · {room.bath_room} bathrooms
+          </p>
+          <div className="flex items-center text-base text-gray-800 mt-1">
+            <span className="font-semibold">★ {room.rating || '4.67'}</span>
+            <span className="mx-1 text-gray-400">·</span>
+            <span className="underline cursor-pointer font-semibold pl-3">6 reviews</span>
           </div>
-          <div className="flex items-center gap-4 border-b border-gray-300 pb-6 pt-6">
-            <div className="w-12 h-12 rounded-full overflow-hidden relative">
-              <Image
-                src={IMAGE_URL.avatar}
-                alt="Host avatar"
-                width={48}
-                height={48}
-                className="object-cover w-full h-full rounded-full"
-              />
-            </div>
-            <div>
-              <p className="text-lg font-semibold">Stay with Chunn</p>
-              <p className="text-base text-gray-600">1 year hosting</p>
-            </div>
-          </div>
-          {_renderRoomFeatures()}
           {_renderAboutThisPlace()}
+          {_renderRoomFeatures()}
           {_renderWhatThisPlaceOffers()}
-          <div className="pt-6 border-t border-gray-200">
-            <CalendarSection
-              selectedDates={selectedDates}
-              setSelectedDates={setSelectedDates}
-              location={room.address}
-            />
-          </div>
         </div>
-        {_renderPriceBox({ selectedDates })}
+        {_renderPriceBox()}
       </div>
     </div>
   );
-}}
+};
+
+export default RoomDetail;
