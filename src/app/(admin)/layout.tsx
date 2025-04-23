@@ -53,10 +53,10 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="relative">
+    <div className="relative max-h-screen h-screen flex flex-col">
       <AdminHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row flex-1">
         {/* Sidebar - hidden on mobile by default */}
         <div
           className={`
@@ -69,7 +69,7 @@ export default function AdminLayout({
         </div>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col mt-12 lg:mt-0">
+        <div className="flex-1 flex flex-col mt-12 lg:mt-0 max-h-[calc(100vh-58px)] overflow-scroll">
           <div className="flex-1 bg-[#ffe3e8] p-4 pt-20 lg:p-10">
             {children}
           </div>
