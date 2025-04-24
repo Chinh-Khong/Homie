@@ -2,45 +2,33 @@ import { IMAGE_URL } from "@/public";
 import React from "react";
 
 const Footer = () => {
-
   const FOOTER_SECTIONS = [
     {
       title: "Support",
       items: [
         "Help Center",
         "HomeCover",
-        "Anti-discrimination",
-        "Disability support",
-        "Cancellation options",
-        "Report neighborhood concern",
+        "Disability Support"
       ],
     },
     {
       title: "Hosting",
       items: [
-        "Homie your home",
-        "HomeCover for Hosts",
-        "Hosting resources",
-        "Community forum",
-        "Hosting responsibly",
-        "Homie-friendly apartments",
-        "Join a free Hosting class",
-        "Find a co-host",
+        "Homie Your Home",
+        "HomeCover For Hosts",
+        "Hosting Resources"
       ],
     },
     {
       title: "Homie",
-      items: [
-        "Newsroom",
-        "New features",
-        "Careers",
-        "Investors",
-        "Gift cards",
-        "Homie.org emergency stays",
-      ],
+      items: ["Newsroom", "New Features","Gift Cards"],
     },
   ];
-  const FOOTER_LINKS = ["Terms", "Sitemap", "Privacy", "Your Privacy Choices"];
+  const FOOTER_LINKS = [
+    { name: "Terms", href: "/terms" },
+    { name: "Sitemap", href: "/sitemap" },
+    { name: "Privacy", href: "/privacy" },
+  ];
 
   const _renderItemsFooter = () => {
     return (
@@ -53,12 +41,7 @@ const Footer = () => {
             <ul className="flex flex-col gap-y-4">
               {section.items.map((item) => (
                 <li key={item}>
-                  <a
-                    href="#"
-                    className="text-base text-black-600 hover:text-black-900 hover:underline"
-                  >
-                    {item}
-                  </a>
+                  <span className="text-base text-black-600">{item}</span>
                 </li>
               ))}
             </ul>
@@ -68,60 +51,28 @@ const Footer = () => {
     );
   };
 
-  const _renderItemHotline = (url: string, src: string, alt: string) => (
-    <a href={url} className="text-gray-900">
-      <img
-        src={src}
-        alt={alt}
-        className="w-7 h-7 object-contain"
-      />
-    </a>
-  );
+
 
   const _renderBottomSection = () => {
     return (
-      <div className="border-t border-gray-200 pt-8 md:px-28">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4 md:mb-0">
-            <span className="text-base text-black-600">
-              © 2025 Homie, Inc.
-            </span>
+      <div className="border-t border-gray-200 pt-8 md:px-28 text-center">
+        <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-wrap gap-2 justify-center mb-4">
+            <span className="text-base text-black-600">© 2025 Homie, Inc.</span>
             <span className="text-base text-black-600">·</span>
             {FOOTER_LINKS.map((item, index) => (
-              <React.Fragment key={item}>
+              <React.Fragment key={item.name}>
                 <a
+                  href={item.href}
                   className="text-base text-black-600 hover:text-black-900 hover:underline cursor-pointer"
                 >
-                  {item}
+                  {item.name}
                 </a>
-                {index < FOOTER_LINKS.length - 1 && <span className="text-base text-black-600">·</span>}
+                {index < FOOTER_LINKS.length - 1 && (
+                  <span className="text-base text-black-600">·</span>
+                )}
               </React.Fragment>
             ))}
-          </div>
-          <div className="flex items-center gap-x-8">
-            <div className="flex items-center">
-              <div className="flex gap-x-2 items-center p-1 hover:border-gray-300 hover:bg-gray-100 hover:rounded">
-                <span className="text-gray-900">🌐</span>
-                <span className="text-base text-gray-900 font-semibold cursor-pointer">
-                  English (US)
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex gap-x-2 items-center p-1 hover:border-gray-300 hover:bg-gray-100 hover:rounded">
-                <span className="text-gray-900 font-semibold cursor-pointer">
-                  đ
-                </span>
-                <span className="text-base text-gray-900 font-semibold cursor-pointer">
-                  VND
-                </span>
-              </div>
-            </div>
-            <div className="flex gap-x-2">
-              {_renderItemHotline('#', IMAGE_URL.FACEBOOK, 'Facebook')}
-              {_renderItemHotline('#', IMAGE_URL.TWITTER, 'LinkedIn')}
-              {_renderItemHotline('#', IMAGE_URL.INSTAGRAM, 'Instagram')}
-            </div>
           </div>
         </div>
       </div>
