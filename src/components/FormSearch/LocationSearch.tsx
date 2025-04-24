@@ -8,7 +8,6 @@ const { RangePicker } = DatePicker;
 
 const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) => void }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [rooms, setRooms] = useState([]); 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDates, setSelectedDates] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
   const datePickerRef = useRef<HTMLDivElement>(null);
@@ -21,7 +20,7 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
     )}`;
   };
 
-  function handleDateChange(dates: [Dayjs | null, Dayjs | null] | null) {
+  const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     if (dates) {
       setSelectedDates(dates);
     } else {
@@ -41,8 +40,8 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
   const handleSearch = () => {
     onSearchLocation(searchKeyword);
   };
-  
-  
+
+
   const _renderLocationSearch = () => (
     <div className="flex flex-col items-center justify-center p-1">
       <div className="font-medium text-base text-center w-full">Location</div>
@@ -100,11 +99,11 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
         </div>
       </div>
       <button
-      type="button"
-      onClick={handleSearch} 
-      className="w-[45px] h-[45px] rounded-full bg-[#ff2e63] flex items-center justify-center shadow-md hover:opacity-80 transition cursor-pointer"
+        type="button"
+        onClick={handleSearch}
+        className="w-[45px] h-[45px] rounded-full bg-[#ff2e63] flex items-center justify-center shadow-md hover:opacity-80 transition cursor-pointer"
       >
-      <SearchOutlined style={{ color: 'white', fontSize: '20px' }} />
+        <SearchOutlined style={{ color: 'white', fontSize: '20px' }} />
       </button>
       {showDatePicker && _renderDatePickerPopup()}
     </div>
