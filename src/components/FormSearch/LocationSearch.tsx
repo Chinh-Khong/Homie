@@ -51,6 +51,11 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
         placeholder="Search destinations"
         value={searchKeyword}
         onChange={(e) => setSearchKeyword(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearch(); 
+          }
+        }}
       />
     </div>
   );
