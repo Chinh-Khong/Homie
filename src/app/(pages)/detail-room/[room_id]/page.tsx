@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { Modal } from "antd";
 import CalendarSection from "@/src/components/CalendarSection/CalendarSection";
 import {
   ShareAltOutlined,
@@ -20,9 +21,11 @@ import {
   LockOutlined,
   WarningOutlined,
   StopOutlined,
+  StarOutlined,
+  StarFilled,
 } from "@ant-design/icons";
 import { IMAGE_URL } from "@/public";
-import Image from "next/image";
+
 
 
 const DetailRoom = () => {
@@ -35,6 +38,27 @@ const DetailRoom = () => {
     startDate: new Date(),
     endDate: new Date(),
   });
+
+  
+  const [reviews, setReviews] = useState([
+    {
+      name: "Chunn",
+      location: "Hanoi, Vietnam",
+      date: "April 2025",
+      rating: 5,
+      comment:
+        "So cool, I had a great time here, hope to come back soon, love you forever"
+    },
+  ]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentReview, setCurrentReview] = useState({
+    name: "",
+    location: "",
+    date: "",
+    rating: 5,
+    comment: "",
+  });
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -74,6 +98,47 @@ const DetailRoom = () => {
       </div>
     );
   }
+
+    
+    const openModal = (index: number | null = null) => {
+      if (index !== null) {
+        setCurrentReview(reviews[index]);
+        setEditIndex(index);
+      } else {
+        setCurrentReview({
+          name: "",
+          location: "",
+          date: new Date().toLocaleDateString("vi-VN", {
+            month: "long",
+            year: "numeric",
+          }),
+          rating: 5,
+          comment: "",
+        });
+        setEditIndex(null);
+      }
+      setIsOpen(true);
+    };
+  
+    const closeModal = () => {
+      setIsOpen(false);
+    };
+  
+    const handleSave = () => {
+      if (editIndex !== null) {
+        const updated = [...reviews];
+        updated[editIndex] = currentReview;
+        setReviews(updated);
+      } else {
+        setReviews([...reviews, { ...currentReview, name: "You" }]);
+      }
+      closeModal();
+    };
+  
+    const handleDelete = (index: number) => {
+      const updatedReviews = reviews.filter((_, i) => i !== index);
+      setReviews(updatedReviews);
+    };
 
   const _renderTitle = () => {
     return (
@@ -300,6 +365,192 @@ const DetailRoom = () => {
     );
   };
 
+ 
+  const _renderReviews = () => {
+    const fixedReviews = [
+      {
+        name: "Ilya",
+        location: "Antalya, Turkey",
+        date: "March 2025",
+        rating: 5,
+        comment:
+          "A relaxing location. The room was clean. Not many grocery stores or cafes nearby, but Grab delivery service was quick.",
+      },
+      {
+        name: "Hauke",
+        location: "Wiesbaden, Germany",
+        date: "April 2025",
+        rating: 5,
+        comment: "The room was very nice! Everyone was very friendly and clean!It was a great experience!",
+      },
+      {
+        name: "Lina",
+        location: "London, UK",
+        date: "February 2025",
+        rating: 4,
+        comment: "Everything was as described. 👍",
+      },
+      {
+        name: "Huong",
+        location: "Phu Quoc, Vietnam",
+        date: "February 2025",
+        rating: 5,
+        comment:
+          "This place feels cozy and sunny. Everything was well-organized, beautiful, and tidy. The area is quiet and fresh, although there aren't many convenience stores nearby.",
+      },
+    ];
+  
+    return (
+      <div className="pt-6 border-t border-gray-200 mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold mt-6 mb-4">Reviews</h2>
+          <button
+            onClick={() => openModal()}
+            className="bg-pink-600 text-white px-4 py-2 rounded-xl hover:bg-pink-550 text-sm"
+          >
+            Write a Review
+          </button>
+        </div>
+  
+      
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 pt-6">
+          {reviews.map((review, index) => (
+            <div
+              key={`user-review-${index}`}
+              className="border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
+            >
+              <div className="flex gap-4 mb-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 mb-5">
+                  <img
+                    src={room.image}
+                    alt={review.name}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold">{review.name}</p>
+                  {room.address && (
+                    <p className="text-sm text-gray-500">{room.address}</p>
+                  )}
+                  <p className="text-sm text-gray-500">{review.date}</p>
+                </div>
+              </div>
+  
+              <div className="flex items-center mb-2">
+                {[...Array(5)].map((_, i) =>
+                  i < review.rating ? (
+                    <StarFilled key={i} className="text-yellow-400 text-lg" />
+                  ) : (
+                    <StarOutlined key={i} className="text-gray-300 text-lg" />
+                  )
+                )}
+              </div>
+  
+              <p className="text-base text-gray-800 mb-4">{review.comment}</p>
+  
+              <div className="flex gap-3">
+                <button
+                  onClick={() => openModal(index)}
+                  className="text-blue-500 text-sm hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(index)}
+                  className="text-red-500 text-sm hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+  
+       
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          {fixedReviews.map((review, index) => (
+            <div
+              key={`fixed-review-${index}`}
+              className="border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
+            >
+              <div className="flex gap-4 mb-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                  <img
+                    src={room.image}
+                    alt={review.name}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold">{review.name}</p>
+                  {review.location && (
+                    <p className="text-sm text-gray-500">{review.location}</p>
+                  )}
+                  <p className="text-sm text-gray-500">{review.date}</p>
+                </div>
+              </div>
+  
+              <div className="flex items-center mb-2">
+                {[...Array(5)].map((_, i) =>
+                  i < review.rating ? (
+                    <StarFilled key={i} className="text-yellow-400 text-lg" />
+                  ) : (
+                    <StarOutlined key={i} className="text-gray-300 text-lg" />
+                  )
+                )}
+              </div>
+  
+              <p className="text-base text-gray-800 mb-4">{review.comment}</p>
+            </div>
+          ))}
+        </div>
+  
+        <Modal
+          open={isOpen}
+          onCancel={closeModal}
+          onOk={handleSave}
+          title={editIndex !== null ? "Edit Review" : "Write a Review"}
+          okText="Save"
+          cancelText="Cancel"
+        >
+          <div className="mb-4">
+            <textarea
+              className="w-full p-3 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              rows={4}
+              placeholder="Enter your review..."
+              value={currentReview.comment}
+              onChange={(e) =>
+                setCurrentReview({ ...currentReview, comment: e.target.value })
+              }
+            />
+          </div>
+  
+          <div className="flex items-center mb-2">
+            {[...Array(5)].map((_, i) =>
+              i < currentReview.rating ? (
+                <StarFilled
+                  key={i}
+                  className="text-yellow-400 text-lg cursor-pointer"
+                  onClick={() =>
+                    setCurrentReview({ ...currentReview, rating: i + 1 })
+                  }
+                />
+              ) : (
+                <StarOutlined
+                  key={i}
+                  className="text-gray-300 text-lg cursor-pointer"
+                  onClick={() =>
+                    setCurrentReview({ ...currentReview, rating: i + 1 })
+                  }
+                />
+              )
+            )}
+          </div>
+        </Modal>
+      </div>
+    );
+  };
+    
   return (
     <div className="lg:px-38 py-8">
       {_renderTitle()}
@@ -336,6 +587,7 @@ const DetailRoom = () => {
 
         {_renderPriceBox({ selectedDates })}
       </div>
+      {_renderReviews()}
     </div>
   );
 };
