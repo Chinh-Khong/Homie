@@ -5,8 +5,10 @@ import User from "@/src/models/User";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { room_id: string } }
+  { params }: { params: Promise<{ room_id: string }> }
 ) {
+  const { room_id } = await params;
+
   try {
     await connectDB();
 
@@ -25,7 +27,7 @@ export async function POST(
 
     const alreadyLiked = await Like.findOne({
       userId: user._id,
-      roomId: params.room_id,
+      roomId: room_id,
     });
 
     if (alreadyLiked) {
@@ -34,7 +36,7 @@ export async function POST(
 
     const newLike = new Like({
       userId: user._id,
-      roomId: params.room_id,
+      roomId: room_id,
     });
 
     await newLike.save();

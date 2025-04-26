@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { room_id: string } }
+  { params }: { params: Promise<{ room_id: string }> }
 ) => {
   try {
     await connectDB();
@@ -19,7 +19,7 @@ export const DELETE = async (
       );
     }
 
-    const { room_id } = params;
+    const { room_id } = await params;
 
     const deletedRoom = await Room.findOneAndDelete({ room_id });
 
