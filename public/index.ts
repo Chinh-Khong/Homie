@@ -13,12 +13,12 @@ export const IMAGE_URL = {
     ROOM1: "/img/room1.png" ,
 
     // detail-room
-    picture1:"./img/picture1.png",
-    picture2:"./img/picture2.png",
-    picture3:"./img/picture3.png",
-    picture4:"./img/picture4.png",
-    picture5:"./img/picture5.png",
-    avatar:"./img/avatar.png"
+    picture1:"/img/picture1.png",
+    picture2:"/img/picture2.png",
+    picture3:"/img/picture3.png",
+    picture4:"/img/picture4.png",
+    picture5:"/img/picture5.png",
+    avatar:"/img/avatar.png"
 
   }
   

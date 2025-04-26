@@ -26,8 +26,6 @@ import {
 } from "@ant-design/icons";
 import { IMAGE_URL } from "@/public";
 
-
-
 const DetailRoom = () => {
   const params = useParams();
   const roomId = params?.room_id;
@@ -38,18 +36,15 @@ const DetailRoom = () => {
     startDate: new Date(),
     endDate: new Date(),
   });
+  type Review = {
+    name: string;
+    location: string;
+    date: string;
+    rating: number;
+    comment: string;
+  };
 
-  
-  const [reviews, setReviews] = useState([
-    {
-      name: "Chunn",
-      location: "Hanoi, Vietnam",
-      date: "April 2025",
-      rating: 5,
-      comment:
-        "So cool, I had a great time here, hope to come back soon, love you forever"
-    },
-  ]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({
     name: "",
@@ -58,6 +53,7 @@ const DetailRoom = () => {
     rating: 5,
     comment: "",
   });
+
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -76,7 +72,6 @@ const DetailRoom = () => {
       } catch (err: any) {
         setError(err.message);
       } finally {
-
         setLoading(false);
       }
     };
@@ -99,46 +94,44 @@ const DetailRoom = () => {
     );
   }
 
-    
-    const openModal = (index: number | null = null) => {
-      if (index !== null) {
-        setCurrentReview(reviews[index]);
-        setEditIndex(index);
-      } else {
-        setCurrentReview({
-          name: "",
-          location: "",
-          date: new Date().toLocaleDateString("vi-VN", {
-            month: "long",
-            year: "numeric",
-          }),
-          rating: 5,
-          comment: "",
-        });
-        setEditIndex(null);
-      }
-      setIsOpen(true);
-    };
-  
-    const closeModal = () => {
-      setIsOpen(false);
-    };
-  
-    const handleSave = () => {
-      if (editIndex !== null) {
-        const updated = [...reviews];
-        updated[editIndex] = currentReview;
-        setReviews(updated);
-      } else {
-        setReviews([...reviews, { ...currentReview, name: "You" }]);
-      }
-      closeModal();
-    };
-  
-    const handleDelete = (index: number) => {
-      const updatedReviews = reviews.filter((_, i) => i !== index);
-      setReviews(updatedReviews);
-    };
+  const openModal = (index: number | null = null) => {
+    if (index !== null) {
+      setCurrentReview(reviews[index]);
+      setEditIndex(index);
+    } else {
+      setCurrentReview({
+        name: "",
+        location: "",
+        date: new Date().toLocaleDateString("vi-VN", {
+          month: "long",
+          year: "numeric",
+        }),
+        rating: 5,
+        comment: "",
+      });
+      setEditIndex(null);
+    }
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleSave = () => {
+    const updatedReviews =
+      editIndex !== null
+        ? reviews.map((review, i) => (i === editIndex ? currentReview : review))
+        : [...reviews, { ...currentReview, name: "You" }];
+
+    setReviews(updatedReviews);
+    closeModal();
+  };
+
+  const handleDelete = (index: number) => {
+    const updatedReviews = reviews.filter((_, i) => i !== index);
+    setReviews(updatedReviews);
+  };
 
   const _renderTitle = () => {
     return (
@@ -222,7 +215,6 @@ const DetailRoom = () => {
           </div>
         ))}
       </div>
-
     </div>
   );
 
@@ -283,7 +275,7 @@ const DetailRoom = () => {
       1,
       Math.ceil(
         (selectedDates.endDate.getTime() - selectedDates.startDate.getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       )
     );
 
@@ -365,41 +357,7 @@ const DetailRoom = () => {
     );
   };
 
- 
   const _renderReviews = () => {
-    const fixedReviews = [
-      {
-        name: "Ilya",
-        location: "Antalya, Turkey",
-        date: "March 2025",
-        rating: 5,
-        comment:
-          "A relaxing location. The room was clean. Not many grocery stores or cafes nearby, but Grab delivery service was quick.",
-      },
-      {
-        name: "Hauke",
-        location: "Wiesbaden, Germany",
-        date: "April 2025",
-        rating: 5,
-        comment: "The room was very nice! Everyone was very friendly and clean!It was a great experience!",
-      },
-      {
-        name: "Lina",
-        location: "London, UK",
-        date: "February 2025",
-        rating: 4,
-        comment: "Everything was as described. 👍",
-      },
-      {
-        name: "Huong",
-        location: "Phu Quoc, Vietnam",
-        date: "February 2025",
-        rating: 5,
-        comment:
-          "This place feels cozy and sunny. Everything was well-organized, beautiful, and tidy. The area is quiet and fresh, although there aren't many convenience stores nearby.",
-      },
-    ];
-  
     return (
       <div className="pt-6 border-t border-gray-200 mt-6">
         <div className="flex items-center justify-between">
@@ -411,100 +369,70 @@ const DetailRoom = () => {
             Write a Review
           </button>
         </div>
-  
-      
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 pt-6">
-          {reviews.map((review, index) => (
-            <div
-              key={`user-review-${index}`}
-              className="border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
-            >
-              <div className="flex gap-4 mb-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 mb-5">
-                  <img
-                    src={room.image}
-                    alt={review.name}
-                    className="object-cover w-full h-full"
-                  />
+          {reviews.length > 0 ? (
+            reviews.map((review, index) => (
+              <div
+                key={`user-review-${index}`}
+                className="border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 mb-5">
+                    <img
+                      src={IMAGE_URL.avatar} 
+                      alt="Host avatar"
+                      className="object-cover w-full h-full rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-semibold">{"You"}</p>
+                    {room?.address && (
+                      <p className="text-sm text-gray-500">{room.address}</p>
+                    )}
+                    <p className="text-sm text-gray-500">
+                      {review.date || "N/A"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold">{review.name}</p>
-                  {room.address && (
-                    <p className="text-sm text-gray-500">{room.address}</p>
+
+                <div className="flex items-center mb-2">
+                  {[...Array(5)].map((_, i) =>
+                    i < (review.rating || 0) ? (
+                      <StarFilled key={i} className="text-yellow-400 text-lg" />
+                    ) : (
+                      <StarOutlined key={i} className="text-gray-300 text-lg" />
+                    )
                   )}
-                  <p className="text-sm text-gray-500">{review.date}</p>
+                </div>
+
+                <p className="text-base text-gray-800 mb-4">
+                  {review.comment || "No comment provided."}
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => openModal(index)}
+                    className="text-blue-500 text-sm hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="text-red-500 text-sm hover:underline"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-  
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) =>
-                  i < review.rating ? (
-                    <StarFilled key={i} className="text-yellow-400 text-lg" />
-                  ) : (
-                    <StarOutlined key={i} className="text-gray-300 text-lg" />
-                  )
-                )}
-              </div>
-  
-              <p className="text-base text-gray-800 mb-4">{review.comment}</p>
-  
-              <div className="flex gap-3">
-                <button
-                  onClick={() => openModal(index)}
-                  className="text-blue-500 text-sm hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(index)}
-                  className="text-red-500 text-sm hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-gray-500 text-center col-span-2">
+              No reviews available.
+            </p>
+          )}
         </div>
-  
-       
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {fixedReviews.map((review, index) => (
-            <div
-              key={`fixed-review-${index}`}
-              className="border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
-            >
-              <div className="flex gap-4 mb-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
-                  <img
-                    src={room.image}
-                    alt={review.name}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div>
-                  <p className="font-semibold">{review.name}</p>
-                  {review.location && (
-                    <p className="text-sm text-gray-500">{review.location}</p>
-                  )}
-                  <p className="text-sm text-gray-500">{review.date}</p>
-                </div>
-              </div>
-  
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) =>
-                  i < review.rating ? (
-                    <StarFilled key={i} className="text-yellow-400 text-lg" />
-                  ) : (
-                    <StarOutlined key={i} className="text-gray-300 text-lg" />
-                  )
-                )}
-              </div>
-  
-              <p className="text-base text-gray-800 mb-4">{review.comment}</p>
-            </div>
-          ))}
-        </div>
-  
+
         <Modal
           open={isOpen}
           onCancel={closeModal}
@@ -524,7 +452,7 @@ const DetailRoom = () => {
               }
             />
           </div>
-  
+
           <div className="flex items-center mb-2">
             {[...Array(5)].map((_, i) =>
               i < currentReview.rating ? (
@@ -550,7 +478,7 @@ const DetailRoom = () => {
       </div>
     );
   };
-    
+
   return (
     <div className="lg:px-38 py-8">
       {_renderTitle()}
@@ -560,17 +488,16 @@ const DetailRoom = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start md:items-center pb-6 mb-6">
         <div>
-          {/* Host info */}
           <div className="flex items-center gap-4 border-b border-gray-300 pb-6 pt-6">
             <div className="w-12 h-12 rounded-full overflow-hidden relative">
               <img
-                src={room.image}
+                src={IMAGE_URL.avatar}
                 alt="Host avatar"
                 className="object-cover w-full h-full rounded-full"
               />
             </div>
             <div>
-              <p className="text-lg font-semibold">Stay with Chunn</p>
+              <p className="text-lg font-semibold">Stay with Homie</p>
               <p className="text-base text-gray-600">1 year hosting</p>
             </div>
           </div>
