@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Modal } from "antd";
 import CalendarSection from "@/src/components/CalendarSection/CalendarSection";
+import GuestSelector from "@/src/components/GuestSelector/GuestSelector";
+
 import {
   ShareAltOutlined,
   HeartOutlined,
@@ -15,7 +17,6 @@ import {
   DesktopOutlined,
   AppstoreOutlined,
   CoffeeOutlined,
-  DownOutlined,
   BranchesOutlined,
   EnvironmentOutlined,
   LockOutlined,
@@ -38,7 +39,11 @@ const DetailRoom = () => {
     startDate: new Date(),
     endDate: new Date(),
   });
-
+  const [guests, setGuests] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
   
   const [reviews, setReviews] = useState([
     {
@@ -271,24 +276,30 @@ const DetailRoom = () => {
     </div>
   );
 
+
+  
   const _renderPriceBox = ({
     selectedDates,
+    guests,
   }: {
     selectedDates: { startDate: Date; endDate: Date };
+    guests: { adults: number; children: number; infants: number };
   }) => {
     const pricePerNight = parseInt(room.price) || 0;
     const serviceFee = 17;
-
+  
     const nights = Math.max(
       1,
       Math.ceil(
         (selectedDates.endDate.getTime() - selectedDates.startDate.getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       )
     );
-
-    const total = pricePerNight * nights + serviceFee;
-
+  
+    // Tính tổng giá dựa trên số lượng khách
+    const guestMultiplier = guests.adults + guests.children * 0.5; // Trẻ em tính giá bằng 50% người lớn
+    const total = pricePerNight * nights * guestMultiplier + serviceFee;
+  
     return (
       <div className="sticky top-24 self-start pt-6">
         <div className="border border-neutral-300 rounded-2xl shadow-lg p-6 space-y-6">
@@ -317,17 +328,7 @@ const DetailRoom = () => {
                 </p>
               </div>
             </div>
-            <div className="flex justify-between items-center px-4 py-3 border-t">
-              <div>
-                <p className="text-xs font-semibold text-neutral-500 uppercase">
-                  Guests
-                </p>
-                <p className="mt-1 text-sm font-medium text-neutral-900">
-                  1 guest
-                </p>
-              </div>
-              <DownOutlined className="text-l text-neutral-500 cursor-pointer" />
-            </div>
+            <GuestSelector guests={guests} setGuests={setGuests} />
           </div>
           <div className="pt-5">
             <button
@@ -346,9 +347,9 @@ const DetailRoom = () => {
           <div className="pt-4 text-lg font-base space-y-5">
             <div className="flex justify-between">
               <p className="underline">
-                ${room.price} x {nights} nights
+                ${room.price} x {nights} nights x {guestMultiplier} guests
               </p>
-              <p>${room.price * nights}</p>
+              <p>${pricePerNight * nights * guestMultiplier}</p>
             </div>
             <div className="flex justify-between pb-6">
               <p className="underline">Homie service fee</p>
@@ -364,8 +365,6 @@ const DetailRoom = () => {
       </div>
     );
   };
-
- 
   const _renderReviews = () => {
     const fixedReviews = [
       {
@@ -585,7 +584,7 @@ const DetailRoom = () => {
           </div>
         </div>
 
-        {_renderPriceBox({ selectedDates })}
+        {_renderPriceBox({ selectedDates, guests})}
       </div>
       {_renderReviews()}
     </div>
