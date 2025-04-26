@@ -159,7 +159,7 @@ const DetailRoom = () => {
 
   const _renderTitle = () => {
     return (
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 px-4 sm:px-6 md:px-8">
         <h1 className="text-2xl md:text-2xl font-bold mb-4 md:mb-0 pb-5">
           {room.name}
         </h1>
@@ -185,7 +185,7 @@ const DetailRoom = () => {
 
   const _renderPhotoGallery = () => {
     return (
-      <div className="mb-8">
+      <div className="mb-8 px-4 sm:px-6 md:px-8">
         <img
           src={room.image}
           alt="Host avatar"
@@ -196,7 +196,7 @@ const DetailRoom = () => {
   };
 
   const _renderRoomFeatures = () => (
-    <div className="pb-6 mb-6 border-b border-gray-200 leading-loose w-full pl-3">
+    <div className="pb-6 mb-6 border-b border-gray-200 leading-loose w-full pl-3 px-4 sm:px-6 md:px-8">
       <div className="border-b border-gray-200 pb-6 mb-6 pt-6">
         <h2 className="text-2xl font-semibold">
           {room.name || "Room Name"}, {room.address}
@@ -243,7 +243,7 @@ const DetailRoom = () => {
   );
 
   const _renderAboutThisPlace = () => (
-    <div className="pt-6 pb-6">
+    <div className="pt-6 pb-6 px-4 sm:px-6 md:px-8">
       <h2 className="text-xl font-semibold mt-6 mb-2 pb-6">About this place</h2>
       <p className="text-base leading-relaxed text-justify text-neutral-800">
         {room.description_room}
@@ -252,7 +252,7 @@ const DetailRoom = () => {
   );
 
   const _renderWhatThisPlaceOffers = () => (
-    <div className="pt-6 border-t border-gray-200">
+    <div className="pt-6 border-t border-gray-200 px-4 sm:px-6 md:px-8">
       <h2 className="text-xl font-semibold mt-6 mb-4 pb-6">
         What this place offers
       </h2>
@@ -306,7 +306,7 @@ const DetailRoom = () => {
     const total = pricePerNight * nights + serviceFee;
 
     return (
-      <div className="sticky top-24 self-start pt-6">
+      <div className="sticky top-24 self-start pt-6 px-4 sm:px-6 md:px-8">
         <div className="border border-neutral-300 rounded-2xl shadow-lg p-6 space-y-6">
           <h3 className="text-2xl font-semibold pb-5">
             <span className="mr-1">${room.price}</span>
@@ -383,7 +383,7 @@ const DetailRoom = () => {
 
   const _renderReviews = () => {
     return (
-      <div className="pt-6 border-t border-gray-200 mt-6">
+      <div className="pt-6 border-t border-gray-200 mt-6 px-4 sm:px-6 md:px-8">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold mt-6 mb-4">Reviews</h2>
           <button
@@ -506,9 +506,16 @@ const DetailRoom = () => {
   return (
     <div className="lg:px-38 py-8">
       {_renderTitle()}
-      <div className="flex flex-row gap-4 items-center">
-        {_renderPhotoGallery()}
-        {_renderRoomFeatures()}
+      <div className="flex flex-col md:flex-row gap-4 items-start">
+        {/* Hiển thị _renderPhotoGallery */}
+        <div className="order-1 md:order-1 w-full md:w-auto">
+          {_renderPhotoGallery()}
+        </div>
+  
+        {/* Hiển thị _renderRoomFeatures */}
+        <div className="order-2 md:order-2 w-full md:w-auto">
+          {_renderRoomFeatures()}
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start md:items-center pb-6 mb-6">
         <div>
@@ -527,7 +534,8 @@ const DetailRoom = () => {
           </div>
           {_renderAboutThisPlace()}
           {_renderWhatThisPlaceOffers()}
-          <div className="pt-6 border-t border-gray-200">
+
+          <div className="pt-6 border-t border-gray-200 mt-6 px-4 sm:px-6 md:px-8">
             <CalendarSection
               selectedDates={selectedDates}
               setSelectedDates={setSelectedDates}
@@ -535,7 +543,7 @@ const DetailRoom = () => {
             />
           </div>
         </div>
-
+  
         {_renderPriceBox({ selectedDates })}
       </div>
       {_renderReviews()}

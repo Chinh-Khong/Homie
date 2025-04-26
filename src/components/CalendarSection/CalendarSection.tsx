@@ -56,7 +56,7 @@ const CalendarSection = ({
         },
       }}
     >
-      <div className="border border-gray-300 hover:black rounded-xl shadow-lg p-6 mb-8">
+      <div className="border border-gray-300 hover:black rounded-xl shadow-lg p-6 mb-8  ">
         <h2 className="text-xl font-semibold mb-1">
           {getNights()} night{getNights() > 1 ? "s" : ""} at {location}
         </h2>
