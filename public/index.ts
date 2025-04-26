@@ -18,7 +18,8 @@ export const IMAGE_URL = {
     picture3:"/img/picture3.png",
     picture4:"/img/picture4.png",
     picture5:"/img/picture5.png",
-    avatar:"/img/avatar.png"
+    avatar:"/img/avatar.png",
+    logo:"/img/logo1.jpg",
 
   }
   

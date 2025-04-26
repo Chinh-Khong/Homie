@@ -80,6 +80,28 @@ const DetailRoom = () => {
     }
   }, [roomId]);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/room/get-review?room_id=${roomId}`);
+        const data = await res.json();
+  
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || "Failed to fetch reviews");
+        }
+  
+        setReviews(data.reviews as Review[]); 
+      } catch (err: any) {
+        console.error("Error fetching reviews:", err.message);
+      }
+    };
+  
+    if (roomId) {
+      fetchReviews();
+    }
+  }, [roomId]);
+
+
   if (loading) {
     return (
       <div className="text-center py-20 text-xl font-medium">Loading...</div>
@@ -118,16 +140,18 @@ const DetailRoom = () => {
     setIsOpen(false);
   };
 
+ 
   const handleSave = () => {
-    const updatedReviews =
-      editIndex !== null
-        ? reviews.map((review, i) => (i === editIndex ? currentReview : review))
-        : [...reviews, { ...currentReview, name: "You" }];
-
-    setReviews(updatedReviews);
+    if (editIndex !== null) {
+      const updatedReviews = reviews.map((review, i) =>
+        i === editIndex ? currentReview : review
+      );
+      setReviews(updatedReviews);
+    } else {
+      setReviews([...reviews, { ...currentReview, name: "You" }]);
+    }
     closeModal();
   };
-
   const handleDelete = (index: number) => {
     const updatedReviews = reviews.filter((_, i) => i !== index);
     setReviews(updatedReviews);
@@ -491,7 +515,7 @@ const DetailRoom = () => {
           <div className="flex items-center gap-4 border-b border-gray-300 pb-6 pt-6">
             <div className="w-12 h-12 rounded-full overflow-hidden relative">
               <img
-                src={IMAGE_URL.avatar}
+                src={IMAGE_URL.logo}
                 alt="Host avatar"
                 className="object-cover w-full h-full rounded-full"
               />
