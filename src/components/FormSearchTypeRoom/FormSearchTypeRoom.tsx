@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const roomTypes = ["countryside", "villa", "lakeside", "seaside", "mountain"];
+const roomTypes = ["countryside", "villa", "lakeside", "seaside", ];
 
 interface Props {
   onChangeType: (type: string) => void;
@@ -17,7 +17,7 @@ const FormSearchTypeRoom = (props: Props) => {
   };
 
   return (
-    <div className="flex gap-4">
+    <div className="md:flex md:flex-row md:justify-center md:items-center gap-4 grid grid-cols-2 lg:grid-cols-6">
       {roomTypes.map((type) => (
         <button
           key={type}
