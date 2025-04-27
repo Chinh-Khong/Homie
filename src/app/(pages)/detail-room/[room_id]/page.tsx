@@ -25,7 +25,6 @@ import { IMAGE_URL } from "@/public";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
-
 const DetailRoom = () => {
   const params = useParams();
   const roomId = params?.room_id;
@@ -39,6 +38,10 @@ const DetailRoom = () => {
   const [disabledDates, setDisabledDates] = useState<
   { check_in: string; check_out: string }[]
 >([]); // Thêm state cho ngày đã đặt
+  const [reviews, setReviews] = useState<{ user_email: string; rating: number; comment: string }[]>([]);
+  const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
+  const [canReview, setCanReview] = useState(false); // Kiểm tra nếu người dùng đã đặt phòng
+  console.log(canReview, 'chinh321');
   const router = useRouter();
   console.log(room, 'chinh456')
   useEffect(() => {
@@ -66,6 +69,40 @@ const DetailRoom = () => {
     if (roomId) {
       fetchRoomDetails();
     }
+  }, [roomId]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/room/review/${roomId}`);
+        const data = await res.json();
+        if (data.success) {
+          setReviews(data.data);
+        }
+      } catch (error) {
+      }
+    };
+    
+    const checkBooking = async () => {
+      const email = localStorage.getItem("email");
+      try {
+        const res = await fetch(`/api/booking/history?email=${email}`);
+        console.log("Response from /api/booking/history:", res); // Kiểm tra phản hồi
+    
+        const data = await res.json();
+        console.log("Data from /api/booking/history:", data); // Kiểm tra dữ liệu
+    
+        if (data.success) {
+          const hasBooked = data.data.some((booking: any) => booking.room_id === roomId);
+          setCanReview(hasBooked);
+        }
+      } catch (error) {
+        console.error("Failed to check booking:", error);
+      }
+    };
+
+    fetchReviews();
+    checkBooking();
   }, [roomId]);
 
   if (loading) {
@@ -144,6 +181,33 @@ const handleReserve = async () => {
     toast.error(error.message || "An error occurred while reserving the room");
   }
 
+};
+
+const handleAddReview = async () => {
+  const email = localStorage.getItem("email");
+  try {
+    const res = await fetch("/api/reviews", {
+      method: "POST",
+      body: JSON.stringify({
+        room_id: roomId,
+        user_email: email,
+        rating: newReview.rating,
+        comment: newReview.comment,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      setReviews((prev) => [data.data, ...prev]); 
+      setNewReview({ rating: 0, comment: "" }); 
+      toast.success("Review added successfully!");
+    } else {
+      toast.error(data.message || "Failed to add review");
+    }
+  } catch (error) {
+    toast.error("An error occurred while adding the review");
+  }
 };
 
   const _renderTitle = () => {
@@ -372,6 +436,54 @@ const handleReserve = async () => {
     );
   };
 
+  const _renderReviews = () => (
+    <div className="pt-6 border-t border-gray-200">
+      <h2 className="text-xl font-semibold mt-6 mb-4">Reviews</h2>
+      {reviews.length > 0 ? (
+        reviews.map((review: any) => (
+          <div key={review._id} className="mb-4">
+            <p className="font-semibold">{review.user_email}</p>
+            <p className="text-yellow-500">{"★".repeat(review.rating)}</p>
+            <p>{review.comment}</p>
+          </div>
+        ))
+      ) : (
+        <p>No reviews yet.</p>
+      )}
+      {canReview && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Add a Review</h3>
+          <div className="flex flex-col gap-2">
+            <select
+              value={newReview.rating}
+              onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
+              className="border rounded p-2"
+            >
+              <option value={0}>Select Rating</option>
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <option key={rating} value={rating}>
+                  {rating} Star{rating > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+            <textarea
+              value={newReview.comment}
+              onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+              placeholder="Write your review..."
+              className="border rounded p-2"
+            />
+            <button
+              onClick={handleAddReview}
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+            >
+              Submit Review
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="lg:px-38 py-8">
       {_renderTitle()}
@@ -409,6 +521,7 @@ const handleReserve = async () => {
 
         {_renderPriceBox({ selectedDates })}
       </div>
+      {_renderReviews()}
     </div>
   );
 };
