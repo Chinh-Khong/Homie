@@ -1,12 +1,11 @@
 "use client";
-import { Input, Button, Select, InputNumber } from "antd";
+import { Input, Select, InputNumber } from "antd";
 import React, { useState } from "react";
 import {
   HomeOutlined,
   DollarOutlined,
   StarOutlined,
   EnvironmentOutlined,
-  BankOutlined,
   KeyOutlined,
   TeamOutlined,
   ProfileOutlined,
@@ -21,6 +20,7 @@ const { Option } = Select;
 
 const AddRoom = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     image: null as File | null,
     name: "",
@@ -74,6 +74,9 @@ const AddRoom = () => {
     data.append("bath_room", formData.bath_room);
     data.append("occupancy_limit", formData.occupancy_limit);
     data.append("type_room", formData.type_room);
+
+    setLoading(true);
+
     try {
       const response = await fetch("/api/room/add-rooms", {
         method: "POST",
@@ -86,10 +89,11 @@ const AddRoom = () => {
       await response.json();
 
       toast.success("Add room successfully!");
-
       router.push("/admin/manage-list-room");
     } catch (error: any) {
-      toast.error(error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,7 +194,13 @@ const AddRoom = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md p-6 items-center flex flex-col">
+    <div className="w-full bg-white rounded-lg shadow-md p-6 items-center flex flex-col relative">
+      {loading && (
+        <div className="fixed inset-0 z-50 bg-black/50 bg-opacity-60 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="max-w-[800px] grid grid-cols-1 md:grid-cols-2 gap-4 w-full items-center"
