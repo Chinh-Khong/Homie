@@ -369,9 +369,9 @@ const handleReserve = async () => {
 
   return (
 
-  <div className="lg:px-38 py-8">
+  <div className=" py-8 px-4 sm:px-2 md:px-4 lg:px-38">
   {_renderTitle()}
-  <div className="flex flex-row gap-4 items-center">
+  <div className="flex flex-col lg:flex-row gap-4 items-center">
     {_renderPhotoGallery()}
     {_renderRoomFeatures()}
   </div>

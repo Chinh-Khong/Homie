@@ -181,7 +181,7 @@ const openModal = (index: number | null = null) => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 px-2 sm:px-2 md:px-4 lg:px-38">
           <div className="border-t bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
               {editIndex !== null ? "Edit Review" : "Write a Review"}
