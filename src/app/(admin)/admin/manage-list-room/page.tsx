@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import axios from "axios";
 import { Button } from "@mui/material";
@@ -36,19 +36,33 @@ const RoomListPage = () => {
   const token = localStorage.getItem("token");
   const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false);
 
-  useEffect(() => {
-    getListRoom();
-  }, []);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    pageSize: 5,
+  });
 
-  const getListRoom = async (query: string = "") => {
+  useEffect(() => {
+    getListRoom(pagination.page);
+  }, [pagination.page]);
+
+  const getListRoom = async (page: number = 1, query: string = "") => {
     try {
       setLoading(true);
       const response = await axios.get("/api/room/get-list-rooms", {
-        params: query ? { search_room: query } : {},
+        params: {
+          search_room: query,
+          page: page,
+          limit: pagination.pageSize,
+        },
       });
 
       if (Array.isArray(response.data.data)) {
         setRooms(response.data.data);
+        setPagination((prev) => ({
+          ...prev,
+          total: response.data.total,
+        }));
       } else {
         setRooms([]);
         toast.warning("No rooms found.");
@@ -62,7 +76,7 @@ const RoomListPage = () => {
   };
 
   const handleSearch = () => {
-    getListRoom(searchText.trim());
+    getListRoom(pagination.page, searchText.trim());
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -111,7 +125,7 @@ const RoomListPage = () => {
       );
 
       toast.success("Room updated successfully!");
-      getListRoom();
+      getListRoom(pagination.page);
     } catch (error) {
       toast.error("Failed to update room!");
     }
@@ -140,7 +154,7 @@ const RoomListPage = () => {
       if (res.status === 200) {
         toast.success("Room deleted successfully");
         setIsModalVisible(false);
-        getListRoom();
+        getListRoom(pagination.page);
       } else {
         toast.error(res.data.message || "Failed to delete room");
       }
@@ -261,7 +275,12 @@ const RoomListPage = () => {
           rowKey="room_id"
           loading={loading}
           bordered
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            current: pagination.page,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            onChange: (page) => setPagination({ ...pagination, page }),
+          }}
           onRow={(record) => ({
             onClick: () => {
               setSelectedRoom(record);
