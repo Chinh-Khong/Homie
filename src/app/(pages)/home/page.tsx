@@ -7,6 +7,7 @@ import { Pagination } from "antd";
 import { useRouter } from "next/navigation";
 import LocationSearch from "@/src/components/FormSearch/LocationSearch";
 import { toast } from "react-toastify";
+import { formatCurrency } from "@/src/utils";
 
 const Home = () => {
   const [rooms, setRooms] = useState([]);
@@ -38,7 +39,7 @@ const Home = () => {
       console.error(error);
     }
   };
-  
+
   const toggleLike = async (roomId: string, isLiked: boolean) => {
     try {
       const token = localStorage.getItem("token");
@@ -110,7 +111,10 @@ const Home = () => {
 
       <p className="text-gray-500 text-sm">{room.address || ""}</p>
       <div className="text-md font-medium text-black-600">
-        <span className="font-[500]">{room.price || "N/A"} đ</span> / đêm
+        <span className="font-[500]">
+          {formatCurrency(room.price) || "N/A"} đ
+        </span>{" "}
+        / đêm
       </div>
     </div>
   );

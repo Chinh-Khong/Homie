@@ -1,5 +1,5 @@
 "use client";
-import { Input, Button, Select } from "antd";
+import { Input, Button, Select, InputNumber } from "antd";
 import React, { useState } from "react";
 import {
   HomeOutlined,
@@ -25,12 +25,9 @@ const AddRoom = () => {
     image: null as File | null,
     name: "",
     address: "",
-    rentalDate: "",
     price: "",
     rating: "",
     description_room: "",
-    check_in: "",
-    check_out: "",
     status: "",
     bed_rooms: "",
     bath_room: "",
@@ -102,18 +99,44 @@ const AddRoom = () => {
     type: string,
     icon?: React.ReactNode
   ) => {
+    const isPrice = name === "price";
+
     return (
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-gray-700">{label}</label>
-        <Input
-          placeholder={label}
-          type={type}
-          name={name}
-          value={formData[name] as string}
-          onChange={handleChange}
-          prefix={icon}
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[50px]"
-        />
+        {isPrice ? (
+          <InputNumber<number>
+            name={name}
+            value={formData[name] ? Number(formData[name]) : undefined}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                [name]: value !== null ? value.toString() : "",
+              })
+            }
+            formatter={(value) =>
+              value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ""
+            }
+            parser={(value) =>
+              parseInt(
+                (value || "").replace(/\./g, "").replace(/[^\d]/g, ""),
+                10
+              )
+            }
+            style={{ width: "100%", height: "50px" }}
+            prefix={icon}
+          />
+        ) : (
+          <Input
+            placeholder={label}
+            type={type}
+            name={name}
+            value={formData[name] as string}
+            onChange={handleChange}
+            prefix={icon}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[50px]"
+          />
+        )}
       </div>
     );
   };
@@ -207,18 +230,12 @@ const AddRoom = () => {
           "number",
           <TeamOutlined />
         )}
-        <Divider className="col-span-2" />
-        <h1 className="col-span-2 text-2xl font-bold mb-2 text-gray-800 pb-6">
-          Date & Time
-        </h1>
-        {_renderInput("Check In", "check_in", "date")}
-        {_renderInput("Check Out", "check_out", "date")}
-        {_renderInput("Rental Date", "rentalDate", "date")}
-        <div className="flex gap-4 items-end h-full">
+
+        <div className="flex gap-4 items-end col-span-2 pt-4 h-full">
           <button
             type="button"
             onClick={() => router.push("/admin/manage-list-room")}
-            className="cursor-pointer w-full h-[50px] px-4 text-rose-500 font-medium rounded-md outline-none col-span-1 md:col-span-2"
+            className="border border-gray-400 cursor-pointer w-full h-[50px] px-4 text-gray-400 font-medium rounded-md outline-none col-span-1 md:col-span-2"
           >
             Cancel
           </button>

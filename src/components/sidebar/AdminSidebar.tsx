@@ -7,6 +7,7 @@ import {
   ShopOutlined,
   CloseOutlined,
   LogoutOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
 
 interface AdminSidebarProps {
@@ -16,6 +17,7 @@ interface AdminSidebarProps {
 const menuItems = [
   { name: "Users", href: "/admin/manage-user", icon: UserOutlined },
   { name: "Rooms", href: "/admin/manage-list-room", icon: ShopOutlined },
+  { name: "Bookings", href: "/admin/manage-bookings", icon: CalendarOutlined },
 ];
 
 const handleLogout = () => {
@@ -39,7 +41,7 @@ export default function AdminSidebar({ onClose }: AdminSidebarProps) {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-8 mt-8 lg:mt-0">
+      <nav className="flex-1 px-4 py-8 pt-20 lg:pt-0">
         <ul className="space-y-2">
           {menuItems.map((item) => {
             const isActive = pathname?.includes(item.href);

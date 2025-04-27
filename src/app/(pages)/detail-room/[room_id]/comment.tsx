@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Pagination } from "antd"; 
 
 
+=======
+import { IMAGE_URL } from "@/public";
+>>>>>>> 992ac901633c5323920797d5ee01ba827b0067a8
 
 interface Review {
   _id: string;
@@ -117,6 +121,7 @@ const CommentSection = ({ roomId }: { roomId: string }) => {
     }
   };
 
+<<<<<<< HEAD
   
 
   const openModal = (index: number | null = null) => {
@@ -148,6 +153,35 @@ const CommentSection = ({ roomId }: { roomId: string }) => {
         >
           Write a Review
         </button>
+=======
+      {/* Review List */}
+      <div className="space-y-4">
+        {Array.isArray(reviews) && reviews.length > 0 ? (
+          reviews.map((review: Review) =>
+            review && review._id ? (
+              <div key={review._id} className="border-b pb-4 flex items-start space-x-4 gap-4">
+                {/* Avatar */}
+                <img
+                  src={review.user_avatar || IMAGE_URL.USER}
+                  alt={`${review.user_name}'s avatar`}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  {/* User Info */}
+                  <p className="text-sm text-gray-500">{review.user_email.split("@")[0]}</p>
+                  {/* Comment */}
+                  <p className="mt-2">{review.comment}</p>
+                  <p className="text-sm text-gray-500">
+                    Posted on {new Date(review.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            ) : null
+          )
+        ) : (
+          <p className="text-gray-500">No reviews yet.</p>
+        )}
+>>>>>>> 992ac901633c5323920797d5ee01ba827b0067a8
       </div>
 
       {/* Review List */}
