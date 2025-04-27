@@ -103,24 +103,18 @@ const Home = () => {
       </div>
       <div className="font-[500] text-md flex flex-row justify-between items-center">
         <span>{truncateName(room.name || "Tên phòng", 4)}</span>
-        <div className="flex items-center">
-          <StarFilled style={{ color: "#fadb14", marginRight: "2px" }} />
-          {room.rating || "N/A"}
-        </div>
+       
       </div>
 
       <p className="text-gray-500 text-sm">{room.address || ""}</p>
       <div className="text-md font-medium text-black-600">
-        <span className="font-[500]">
-          {formatCurrency(room.price) || "N/A"} đ
-        </span>{" "}
-        / đêm
+        <span className="font-[500]">{room.price || "N/A"} $</span>/Night
       </div>
     </div>
   );
 
   return (
-    <div className="lg:px-38 px-4 w-full flex flex-col gap-8">
+    <div className="lg:px-28 px-4 w-full flex flex-col gap-8">
       <LocationSearch
         onSearchLocation={(keyword) => {
           setTypeRoom(keyword);
@@ -137,7 +131,7 @@ const Home = () => {
         {rooms?.length > 0 ? (
           rooms.map((room) => _renderItemRoom(room))
         ) : (
-          <p className="!w-full">No matching rooms found.</p>
+          <p className="!w-full">Loading rooms.</p>
         )}
       </div>
       <div className="flex justify-center !mb-4">

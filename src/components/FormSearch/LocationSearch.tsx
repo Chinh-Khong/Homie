@@ -43,10 +43,9 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
 
 
   const _renderLocationSearch = () => (
-    <div className="flex flex-col items-center justify-center p-1">
-      <div className="font-medium text-base text-center w-full">Location</div>
+    <div className="">
       <input
-        className="text-sm text-gray-600 outline-none text-center w-full"
+        className="text-b text-gray-600 outline-none text-center w-full"
         placeholder="Search destinations"
         value={searchKeyword}
         onChange={(e) => setSearchKeyword(e.target.value)}
@@ -83,16 +82,7 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
   );
 
   const _renderDatePickerComponent = () => (
-    <div className="flex items-center justify-between border-l border-gray-300 pl-2 p-1">
-      <div className="flex-1">
-        <div className="font-medium text-base text-center w-full">Schedule</div>
-        <div
-          className="flex justify-center items-center text-sm text-gray-600 cursor-pointer"
-          onClick={() => setShowDatePicker(!showDatePicker)}
-        >
-          {formatSelectedDates()}
-        </div>
-      </div>
+    <div className="flex items-center justify-between pl-2 p-1">
       <button
         type="button"
         onClick={handleSearch}
@@ -105,9 +95,9 @@ const LocationSearch = ({ onSearchLocation }: { onSearchLocation: (val: string) 
   );
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <div className="relative flex justify-center items-center border border-gray-200 rounded-full shadow-sm p-2 min-w-xl">
-        <div className="grid grid-cols-2 w-full">
+    <div className="w-full md:flex md:flex-row md:justify-center">
+      <div className="relative flex justify-center items-center border border-gray-200 rounded-full shadow-sm md:min-w-xl ">
+        <div className="w-full flex items-center justify-between">  
           {_renderLocationSearch()}
           {_renderDatePickerComponent()}
         </div>
