@@ -192,14 +192,9 @@ const handleReserve = async () => {
           {room.name || "Room Name"}, {room.address}
         </h2>
         <p className="text-gray-700 mt-1">
-          {room.bed_rooms} bed rooms · {room.bath_room} bath room ·{" "}
+          {room.bed_rooms} bed rooms · {room.bath_room} bath room 
         </p>
-        <div className="flex items-center text-base text-gray-800 mt-1">
-          <span className="mx-1 text-gray-400">·</span>
-          <span className="underline cursor-pointer font-semibold pl-3">
-            6 reviews
-          </span>
-        </div>
+        
       </div>
       <div className="space-y-6">
         {[
@@ -373,44 +368,58 @@ const handleReserve = async () => {
   };
 
   return (
-    <div className="lg:px-38 py-8">
-      {_renderTitle()}
-      <div className="flex flex-row gap-4 items-center">
-        {_renderPhotoGallery()}
-        {_renderRoomFeatures()}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start md:items-center pb-6 mb-6">
-        <div>
-          {/* Host info */}
-          <div className="flex items-center gap-4 border-b border-gray-300 pb-6 pt-6">
-            <div className="w-12 h-12 rounded-full overflow-hidden relative">
-              <img
-                src={room.image}
-                alt="Host avatar"
-                className="object-cover w-full h-full rounded-full"
-              />
-            </div>
-            <div>
-              <p className="text-lg font-semibold">Stay with Chunn</p>
-              <p className="text-base text-gray-600">1 year hosting</p>
-            </div>
-          </div>
-          {_renderAboutThisPlace()}
-          {_renderWhatThisPlaceOffers()}
-          <div className="pt-6 border-t border-gray-200">
-            <CalendarSection
-              selectedDates={selectedDates}
-              setSelectedDates={setSelectedDates}
-              location={room.address}
-              disabledDates={disabledDates}
-            />
-          </div>
-        </div>
 
-        {_renderPriceBox({ selectedDates })}
-        <CommentSection roomId={Array.isArray(roomId) ? roomId[0] : roomId || ""} />
+  <div className="lg:px-38 py-8">
+  {_renderTitle()}
+  <div className="flex flex-row gap-4 items-center">
+    {_renderPhotoGallery()}
+    {_renderRoomFeatures()}
+  </div>
+  <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-10 relative items-start pb-6 mb-6">
+    <div>
+      {/* Thông tin host */}
+      <div className="flex items-center gap-4 border-b border-gray-300 pb-6 pt-6">
+        <div className="w-12 h-12 rounded-full overflow-hidden relative">
+          <img
+            src={IMAGE_URL.logo} // Sử dụng ảnh mặc định nếu không có ảnh
+            alt="Host avatar"
+            className="object-cover w-full h-full rounded-full"
+          />
+        </div>
+        <div>
+          <p className="text-lg font-semibold">Stay with Homie</p>
+          <p className="text-base text-gray-600">1 year hosting</p>
+        </div>
+      </div>
+
+
+      {_renderAboutThisPlace()}
+      {_renderWhatThisPlaceOffers()}
+
+
+      <div className="pt-6 border-t border-gray-200">
+        <CalendarSection
+          selectedDates={selectedDates}
+          setSelectedDates={setSelectedDates}
+          location={room.address}
+          disabledDates={disabledDates}
+        />
       </div>
     </div>
+
+
+    <div className="sticky top-24 self-start">
+      {_renderPriceBox({ selectedDates })}
+    </div>
+  </div>
+
+
+  <div className="mt-12 pt-8 border-t border-gray-300 w-full">
+    <CommentSection roomId={Array.isArray(roomId) ? roomId[0] : roomId || ""} />
+  </div>
+</div>
+    
+    
   );
 };
 
