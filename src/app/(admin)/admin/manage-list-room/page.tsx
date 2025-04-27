@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import axios from "axios";
 import { Button } from "@mui/material";
@@ -18,7 +18,6 @@ export interface ParamsRoom {
   image: string;
   rating: number;
   description_room: string;
-  check_in: string;
   check_out: string;
   status: string;
   bed_rooms: number;
@@ -37,19 +36,33 @@ const RoomListPage = () => {
   const token = localStorage.getItem("token");
   const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false);
 
-  useEffect(() => {
-    getListRoom();
-  }, []);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    pageSize: 5,
+  });
 
-  const getListRoom = async (query: string = "") => {
+  useEffect(() => {
+    getListRoom(pagination.page);
+  }, [pagination.page]);
+
+  const getListRoom = async (page: number = 1, query: string = "") => {
     try {
       setLoading(true);
       const response = await axios.get("/api/room/get-list-rooms", {
-        params: query ? { search_room: query } : {},
+        params: {
+          search_room: query,
+          page: page,
+          limit: pagination.pageSize,
+        },
       });
 
       if (Array.isArray(response.data.data)) {
         setRooms(response.data.data);
+        setPagination((prev) => ({
+          ...prev,
+          total: response.data.total,
+        }));
       } else {
         setRooms([]);
         toast.warning("No rooms found.");
@@ -63,7 +76,7 @@ const RoomListPage = () => {
   };
 
   const handleSearch = () => {
-    getListRoom(searchText.trim());
+    getListRoom(pagination.page, searchText.trim());
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -82,12 +95,9 @@ const RoomListPage = () => {
       formData.append("room_id", updatedRoom.room_id.toString());
       formData.append("name", updatedRoom.name);
       formData.append("address", updatedRoom.address);
-      formData.append("rentalDate", updatedRoom.rental_date);
       formData.append("price", updatedRoom.price.toString());
       formData.append("rating", updatedRoom.rating.toString());
       formData.append("description_room", updatedRoom.description_room);
-      formData.append("check_in", updatedRoom.check_in);
-      formData.append("check_out", updatedRoom.check_out);
       formData.append("status", updatedRoom.status);
       formData.append("bed_rooms", updatedRoom.bed_rooms.toString());
       formData.append("bath_room", updatedRoom.bath_room.toString());
@@ -115,7 +125,7 @@ const RoomListPage = () => {
       );
 
       toast.success("Room updated successfully!");
-      getListRoom();
+      getListRoom(pagination.page);
     } catch (error) {
       toast.error("Failed to update room!");
     }
@@ -144,7 +154,7 @@ const RoomListPage = () => {
       if (res.status === 200) {
         toast.success("Room deleted successfully");
         setIsModalVisible(false);
-        getListRoom();
+        getListRoom(pagination.page);
       } else {
         toast.error(res.data.message || "Failed to delete room");
       }
@@ -188,7 +198,8 @@ const RoomListPage = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price: number) => `$${price.toLocaleString()}`,
+      render: (price: number) =>
+        `$${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`,
       sorter: (a: ParamsRoom, b: ParamsRoom) => a.price - b.price,
     },
     {
@@ -227,7 +238,9 @@ const RoomListPage = () => {
   return (
     <div>
       <div className="bg-white p-6 rounded-xl shadow-md flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Manage Rooms</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          Manage Rooms
+        </h1>
 
         <div className="flex justify-between">
           <div className="flex flex-row gap-4 items-center">
@@ -262,7 +275,12 @@ const RoomListPage = () => {
           rowKey="room_id"
           loading={loading}
           bordered
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            current: pagination.page,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            onChange: (page) => setPagination({ ...pagination, page }),
+          }}
           onRow={(record) => ({
             onClick: () => {
               setSelectedRoom(record);

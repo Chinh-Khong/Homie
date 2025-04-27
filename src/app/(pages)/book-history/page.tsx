@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tag, Image } from "antd";
 import axios from "axios";
+import { formatCurrency } from "@/src/utils";
 
 const BookHistory = () => {
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const email = localStorage.getItem("email"); 
+      const email = localStorage.getItem("email");
       if (!email) {
         console.error("Email not found in localStorage");
         setLoading(false);
@@ -21,11 +22,11 @@ const BookHistory = () => {
         const data = response.data;
 
         if (data.success) {
-          setBookings(data.data); 
-        } 
+          setBookings(data.data);
+        }
       } catch (error) {
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
     fetchBookings();
@@ -70,7 +71,7 @@ const BookHistory = () => {
       title: "Price",
       dataIndex: "total_price",
       key: "total_price",
-      render: (price: number) => `$${price}`,
+      render: (price: number) => formatCurrency(price),
     },
     {
       title: "Status",
@@ -98,7 +99,9 @@ const BookHistory = () => {
 
   return (
     <div className="w-full px-4 lg:px-38 py-3">
-      <h1 className="text-3xl font-bold text-center mb-6 py-5">Booking History</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 py-5">
+        Booking History
+      </h1>
       <Table
         dataSource={bookings} // Gắn dữ liệu từ state vào bảng
         columns={columns}

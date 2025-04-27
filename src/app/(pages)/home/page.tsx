@@ -7,6 +7,7 @@ import { Pagination } from "antd";
 import { useRouter } from "next/navigation";
 import LocationSearch from "@/src/components/FormSearch/LocationSearch";
 import { toast } from "react-toastify";
+import { formatCurrency } from "@/src/utils";
 
 const Home = () => {
   const [rooms, setRooms] = useState([]);
@@ -38,7 +39,7 @@ const Home = () => {
       console.error(error);
     }
   };
-  
+
   const toggleLike = async (roomId: string, isLiked: boolean) => {
     try {
       const token = localStorage.getItem("token");

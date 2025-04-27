@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { IMAGE_URL } from "@/public";
 
 interface Review {
   _id: string;
@@ -102,14 +103,22 @@ const CommentSection = ({ roomId }: { roomId: string }) => {
         {Array.isArray(reviews) && reviews.length > 0 ? (
           reviews.map((review: Review) =>
             review && review._id ? (
-              <div key={review._id} className="border-b pb-4">
-                <p>
-                  stars
-                </p>
-                <p>{review.comment}</p>
-                <p className="text-sm text-gray-500">
-                  Posted on {new Date(review.createdAt).toLocaleDateString()}
-                </p>
+              <div key={review._id} className="border-b pb-4 flex items-start space-x-4 gap-4">
+                {/* Avatar */}
+                <img
+                  src={review.user_avatar || IMAGE_URL.USER}
+                  alt={`${review.user_name}'s avatar`}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  {/* User Info */}
+                  <p className="text-sm text-gray-500">{review.user_email.split("@")[0]}</p>
+                  {/* Comment */}
+                  <p className="mt-2">{review.comment}</p>
+                  <p className="text-sm text-gray-500">
+                    Posted on {new Date(review.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
             ) : null
           )

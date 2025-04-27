@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { HeartFilled, SearchOutlined, StarFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Input } from "antd";
+import { formatCurrency } from "@/src/utils";
 
 const Favorite = () => {
   const [favoriteRooms, setFavoriteRooms] = useState([]);
@@ -107,7 +108,9 @@ const Favorite = () => {
         <p className="text-gray-500 text-sm">{room.address || ""}</p>
 
         <div className="text-md font-medium text-black-600 mt-1">
-          <span className="font-semibold">{room.price || "N/A"}</span>
+          <span className="font-semibold">
+            {formatCurrency(room.price) || "N/A"}
+          </span>
         </div>
       </div>
     </div>
