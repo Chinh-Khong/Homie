@@ -8,7 +8,6 @@ export const POST = async (req: NextRequest) => {
 
     const body = await req.json();
     const { room_id, user_email, comment, user_name, user_avatar } = body;
-    console.log(body, "Request body");
     if (!room_id || !user_email || !comment) {
       return NextResponse.json(
         { success: false, message: "Missing required fields." },

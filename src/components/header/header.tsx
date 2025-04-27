@@ -87,12 +87,8 @@ const Header = () => {
 
       if (res.ok) {
         setUser(data.user);
-      } else {
-        console.error(data.message || "Unable to fetch user information");
-      }
-    } catch (error) {
-      console.error("API call error:", error);
-    }
+      } 
+    } catch (error) {}
   };
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
